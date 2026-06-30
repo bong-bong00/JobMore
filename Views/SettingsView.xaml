@@ -1,0 +1,79 @@
+<UserControl x:Class="JobMore.Views.SettingsView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <Grid Margin="28,24,28,24">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <StackPanel Grid.Row="0" Margin="2,0,2,18">
+            <TextBlock Text="설정" FontSize="26" FontWeight="Bold" Foreground="{StaticResource Ink}" />
+        </StackPanel>
+
+        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Hidden">
+            <StackPanel HorizontalAlignment="Left">
+                <Border Style="{StaticResource Card}" Width="520" Padding="32" Margin="3,3,3,16">
+                    <StackPanel>
+                        <TextBlock Text="회원 정보" FontWeight="Bold" FontSize="16"
+                                   Foreground="{StaticResource Ink}" Margin="0,0,0,4" />
+                        <TextBlock FontSize="11.5" Foreground="{StaticResource Sub}" Margin="0,0,0,20">
+                            <Run Text="가입일 " /><Run Text="{Binding JoinedAt, Mode=OneWay}" />
+                        </TextBlock>
+
+                        <TextBlock Text="이름" Style="{StaticResource FieldLabel}" />
+                        <TextBox Text="{Binding Name, UpdateSourceTrigger=PropertyChanged}"
+                                 Style="{StaticResource Field}" Margin="0,0,0,14" />
+
+                        <TextBlock Text="나이" Style="{StaticResource FieldLabel}" />
+                        <ComboBox SelectedItem="{Binding Age}" ItemsSource="{Binding AgeOptions}"
+                                  FontSize="13" Padding="10,7" Margin="0,0,0,14" MaxDropDownHeight="220" />
+
+                        <TextBlock Text="아이디" Style="{StaticResource FieldLabel}" />
+                        <TextBox Text="{Binding Email, UpdateSourceTrigger=PropertyChanged}"
+                                 Style="{StaticResource Field}" Margin="0,0,0,18" />
+
+                        <Button Content="저장" Style="{StaticResource PrimaryButton}"
+                                Command="{Binding SaveCommand}" HorizontalAlignment="Left" Height="44" Width="130" />
+
+                        <Border Height="1" Background="{StaticResource Line}" Margin="0,22,0,18" />
+
+                        <TextBlock Text="비밀번호 변경" FontWeight="Bold" FontSize="15"
+                                   Foreground="{StaticResource Ink}" Margin="0,0,0,14" />
+                        <TextBlock Text="현재 비밀번호" Style="{StaticResource FieldLabel}" />
+                        <Border Style="{StaticResource FieldPasswordBorder}" Margin="0,0,0,12">
+                            <PasswordBox x:Name="CurrentPw" BorderThickness="0" Background="Transparent" FontSize="13" />
+                        </Border>
+                        <TextBlock Text="새 비밀번호" Style="{StaticResource FieldLabel}" />
+                        <Border Style="{StaticResource FieldPasswordBorder}" Margin="0,0,0,12">
+                            <PasswordBox x:Name="NewPw" BorderThickness="0" Background="Transparent" FontSize="13" />
+                        </Border>
+                        <TextBlock Text="새 비밀번호 확인" Style="{StaticResource FieldLabel}" />
+                        <Border Style="{StaticResource FieldPasswordBorder}" Margin="0,0,0,18">
+                            <PasswordBox x:Name="ConfirmPw" BorderThickness="0" Background="Transparent" FontSize="13" />
+                        </Border>
+                        <Button Content="비밀번호 변경" Style="{StaticResource PrimaryButton}"
+                                Click="ChangePassword_Click" HorizontalAlignment="Left" Height="44" Width="150" />
+                    </StackPanel>
+                </Border>
+
+
+                <!-- 계정 -->
+                <Border Style="{StaticResource Card}" Width="520" Padding="28" Margin="3">
+                    <StackPanel>
+                        <TextBlock Text="계정" FontWeight="Bold" FontSize="15"
+                                   Foreground="{StaticResource Ink}" Margin="0,0,0,14" />
+                        <StackPanel Orientation="Horizontal">
+                            <Button Content="로그아웃" Style="{StaticResource GhostButton}"
+                                    Command="{Binding LogoutCommand}" Margin="0,0,10,0" />
+                            <Button Content="회원 탈퇴" Style="{StaticResource DangerButton}"
+                                    Command="{Binding WithdrawCommand}" />
+                        </StackPanel>
+                        <TextBlock Text="탈퇴 시 회원 정보와 작성한 자소서·자격증이 삭제됩니다."
+                                   FontSize="11" Foreground="{StaticResource Sub}" Margin="2,12,0,0" />
+                    </StackPanel>
+                </Border>
+            </StackPanel>
+        </ScrollViewer>
+    </Grid>
+</UserControl>

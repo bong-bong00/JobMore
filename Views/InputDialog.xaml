@@ -1,0 +1,35 @@
+<Window x:Class="JobMore.Views.InputDialog"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        WindowStyle="None" AllowsTransparency="True" Background="Transparent"
+        SizeToContent="WidthAndHeight" ResizeMode="NoResize" ShowInTaskbar="False"
+        WindowStartupLocation="CenterOwner">
+    <Border CornerRadius="16" Background="White" Width="380" Margin="20">
+        <Border.Effect>
+            <DropShadowEffect Color="#2A3C66" BlurRadius="34" ShadowDepth="3" Opacity="0.22" />
+        </Border.Effect>
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+
+            <Border Grid.Row="0" Background="{StaticResource SignatureGrad}" CornerRadius="16,16,0,0" Padding="22,16">
+                <TextBlock x:Name="TitleText" Text="입력" Foreground="White" FontSize="15" FontWeight="Bold"
+                           FontFamily="{StaticResource UiFont}" />
+            </Border>
+
+            <StackPanel Grid.Row="1" Margin="22,20,22,20">
+                <TextBlock x:Name="MsgText" Foreground="{StaticResource Sub}" FontSize="12.5"
+                           FontFamily="{StaticResource UiFont}" TextWrapping="Wrap" Margin="0,0,0,8" />
+                <TextBox x:Name="InputBox" Style="{StaticResource Field}" FontSize="13" />
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,22,0,0">
+                    <Button x:Name="NoBtn" Content="취소" Style="{StaticResource GhostButton}"
+                            Click="No_Click" Margin="0,0,8,0" />
+                    <Button x:Name="YesBtn" Content="추가" Style="{StaticResource PrimaryButton}"
+                            Click="Yes_Click" />
+                </StackPanel>
+            </StackPanel>
+        </Grid>
+    </Border>
+</Window>
