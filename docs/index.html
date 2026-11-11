@@ -138,9 +138,13 @@ h4 { font-size: 18px; font-weight: 700; line-height: 1.5; letter-spacing: -.025e
 .nav .btn { min-height: 42px; padding: 0 16px; font-size: 14.5px; border-radius: 11px; }
 @media (max-width: 940px) { .nav-links { display: none; } .nav .btn { margin-left: auto; } }
 
-/* ── 실제 화면 사진 ── */
-.shot { border-radius: 18px; overflow: hidden; box-shadow: var(--shadow); border: 1px solid var(--line); background: var(--bg); }
-.shot img { width: 100%; height: auto; }
+/* ── 히어로 ── */
+.hero-copy { max-width: 40em; margin-bottom: clamp(26px, 3vw, 40px); }
+.hero-win { box-shadow: var(--shadow); }
+.meta { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 14px 26px; margin-top: clamp(22px, 2.6vw, 32px); }
+.meta li { border-top: 1px solid var(--line); padding-top: 12px; font-size: 14px; color: var(--fg-2); }
+.meta li span { display: block; font-size: 11.5px; font-weight: 700; color: var(--sig); margin-bottom: 2px; }
+.det .in.memo { min-height: 38px; line-height: 1.6; }
 
 /* ── 앱 창 재현 ── */
 .win { border-radius: 16px; overflow: hidden; background: var(--bg); color: var(--fg); box-shadow: var(--shadow-s); border: 1px solid var(--line); min-width: 0; }
@@ -222,10 +226,10 @@ h4 { font-size: 18px; font-weight: 700; line-height: 1.5; letter-spacing: -.025e
 .det .two { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
 .dots { display: flex; gap: 7px; }
 .dots i { width: 19px; height: 19px; border-radius: 50%; display: grid; place-items: center; color: #fff; font-size: 10px; font-style: normal; }
-.stepper { display: flex; align-items: center; gap: 3px; background: var(--sig-soft); border-radius: 9px; padding: 6px 7px; flex-wrap: wrap; }
-.stepper span { font-size: 10.5px; font-weight: 700; color: var(--sig-deep); border-radius: 6px; padding: 3px 7px; }
+.stepper { display: flex; align-items: center; gap: 3px; background: var(--sig-soft); border-radius: 9px; padding: 6px 7px; flex-wrap: nowrap; overflow-x: auto; }
+.stepper span { font-size: 10.5px; font-weight: 700; color: var(--sig-deep); border-radius: 6px; padding: 3px 7px; white-space: nowrap; flex: none; }
 .stepper span.on { background: #6A44F0; color: #fff; }
-.stepper i { font-style: normal; color: var(--sig-mid); font-size: 9px; }
+.stepper i { font-style: normal; color: var(--sig-mid); font-size: 9px; flex: none; }
 .mvbtn { display: flex; gap: 7px; }
 .mvbtn button { flex: 1 1 0; border: 1px solid var(--line); background: var(--bg); border-radius: 9px; padding: 8px 4px; font-size: 11.5px; font-weight: 700; cursor: pointer; }
 .mvbtn button:hover { border-color: var(--sig); color: var(--sig); }
@@ -318,7 +322,6 @@ h4 { font-size: 18px; font-weight: 700; line-height: 1.5; letter-spacing: -.025e
 @media (min-width: 980px) {
   .two-col { grid-template-columns: minmax(0, .8fr) minmax(0, 1.2fr); }
   .two-col.even { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .two-col.hero { grid-template-columns: minmax(0, 1.02fr) minmax(0, 1.18fr); }
 }
 
 /* ── 단계 트랙 ── */
@@ -396,25 +399,7 @@ h4 { font-size: 18px; font-weight: 700; line-height: 1.5; letter-spacing: -.025e
 .rules h4 { margin: 4px 0 6px; }
 .rules p { font-size: 14.5px; color: var(--fg-2); }
 
-/* ── 배운 점 · 향후 ── */
-.learn { display: grid; grid-template-columns: repeat(auto-fit, minmax(292px, 1fr)); gap: 16px; }
-.learn article { background: var(--band-card); border: 1px solid var(--band-line); border-radius: 18px; padding: 22px; min-width: 0; }
-.learn .q { font-size: 18.5px; font-weight: 800; letter-spacing: -.035em; margin-bottom: 10px; line-height: 1.42; }
-.learn p { font-size: 14.5px; color: var(--band-2); }
-.counts { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 16px 20px; margin-top: 32px; }
-.counts div { border-top: 2px solid var(--band-line); padding-top: 12px; }
-.counts dt { font-size: 27px; font-weight: 900; letter-spacing: -.055em; font-variant-numeric: tabular-nums; }
-.counts dd { font-size: 13px; color: var(--band-2); margin-top: 2px; }
-.plans { display: grid; gap: 12px; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); }
-.plans li { background: var(--bg); border: 1px solid var(--line); border-radius: 15px; padding: 19px; min-width: 0; }
-.plans b { display: block; font-size: 16.5px; font-weight: 700; letter-spacing: -.03em; margin-bottom: 6px; }
-.plans span { font-size: 14px; color: var(--fg-2); }
 
-.honest { border: 1px solid var(--line); border-radius: 20px; padding: clamp(22px, 3vw, 34px); background: var(--bg); }
-.honest ul { display: grid; gap: 9px; margin-top: 16px; }
-.honest li { font-size: 14.5px; color: var(--fg-2); display: flex; gap: 10px; }
-.honest li::before { content: "·"; color: var(--sig); font-weight: 900; flex: none; }
-.honest .o { margin-top: 20px; padding-top: 18px; border-top: 1px solid var(--line); font-size: 16px; font-weight: 600; }
 
 .final { text-align: center; }
 .final .lead { margin-inline: auto; }
@@ -435,7 +420,6 @@ footer a:hover { color: var(--sig); }
       <a href="#stage">단계 기록</a>
       <a href="#ai">AI 자소서</a>
       <a href="#design">디자인</a>
-      <a href="#learn">배운 점</a>
     </nav>
     <a class="btn" href="https://github.com/bong-bong00/JobMore" target="_blank" rel="noopener">GitHub</a>
   </div>
@@ -444,9 +428,9 @@ footer a:hover { color: var(--sig); }
 <main id="top">
 
   <!-- ════ 히어로 ════ -->
-  <section class="sec" style="padding-bottom:clamp(30px,3.4vw,54px)">
-    <div class="wrap two-col hero">
-      <div>
+  <section class="sec" style="padding-bottom:clamp(26px,3vw,44px)">
+    <div class="wrap">
+      <div class="hero-copy">
         <span class="pill">취업 지원 관리 데스크톱 앱</span>
         <h1>흩어진 지원 현황을<br>한 곳에 <span class="hl">모아서</span>,<br>합격은 <span class="hl">더 (More)</span></h1>
         <p class="lead" style="margin-top:20px">마감·면접 D-day를 색으로 경고하고, 단계별 합격률까지 자동 집계하는 취업 트래커. 자소서는 켜둔 항목만으로 AI가 초안을 씁니다.</p>
@@ -456,9 +440,83 @@ footer a:hover { color: var(--sig); }
         </div>
       </div>
 
-      <figure class="shot">
-        <img src="img/app-main.png" alt="잡모아 지원현황 화면. 왼쪽 보라 사이드바에 지원현황·일정·기록·작성·설정 메뉴가 있고, 본문에는 이번 주 마감 3건·마감 임박 1건·면접 진행 2건·서류 합격률 67% 타일과 지원 목록, 오른쪽에 상세·편집 패널이 있다." width="1700" height="1305">
-      </figure>
+      <div class="win hero-win">
+        <div class="win-bar"><img src="img/logo.png" alt="" width="17" height="17" style="border-radius:5px"><span>잡모아 JobMore</span><span class="ctl" aria-hidden="true">—□×</span></div>
+        <div class="win-body">
+          <div class="rail">
+            <div class="lg"><img src="img/logo.png" alt="" width="26" height="26"><span><b>잡모아</b><span>JOBMORE</span></span></div>
+            <span class="it on">지원현황</span><span class="it">일정</span><span class="it">기록</span><span class="it">작성</span><span class="it">설정</span>
+            <div class="ft">흩어진 지원 현황을 모아서,<br>합격은 더</div>
+          </div>
+          <div class="pane">
+            <div class="ttl">지원현황</div>
+            <div class="tiles">
+              <div class="tile"><span>이번 주 마감</span><b style="color:#7C5CFC">3</b></div>
+              <div class="tile"><span>마감 임박 (3일내)</span><b style="color:#D74949">1</b></div>
+              <div class="tile"><span>면접 진행</span><b>2</b></div>
+              <div class="tile"><span>서류 합격률</span><b>67%</b></div>
+            </div>
+            <div class="dbar">
+              <div class="lg2">D-day 색:
+                <em><i style="background:#D74949"></i>마감 3일 이내</em>
+                <em><i style="background:#7E5FFC"></i>그 외 예정</em>
+                <em><i style="background:#A1A5BA"></i>지난 일정</em>
+              </div>
+              <div class="bt"><span class="p">+ 지원 추가</span><span>저장</span></div>
+            </div>
+            <div class="panels" style="grid-template-columns:minmax(0,1fr) 274px">
+              <div class="card">
+                <div class="lbar">
+                  <div class="sch">회사 · 직무 검색</div>
+                  <div class="sel">전체 단계 <i aria-hidden="true">▾</i></div>
+                </div>
+                <div class="ltab-s">
+                  <table class="ltab">
+                    <thead><tr><th>회사</th><th>직무</th><th>단계</th><th>D-day</th><th class="lk">바로가기</th></tr></thead>
+                    <tbody>
+                      <tr class="on"><td class="co">토스</td><td class="jb">프론트엔드 개발자</td><td><span class="bdg" style="background:#6A44F0">2차면접</span></td><td><span class="dpill" style="background:#D74949">D-2</span><span class="dnote">2차면접</span></td><td class="lk">🔗</td></tr>
+                      <tr><td class="co">당근</td><td class="jb">백엔드 개발자</td><td><span class="bdg" style="background:#7C5CFC">서류합격</span></td><td><span class="dpill" style="background:#7E5FFC">D-6</span><span class="dnote">1차면접</span></td><td class="lk">🔗</td></tr>
+                      <tr><td class="co">네이버</td><td class="jb">데이터 엔지니어</td><td><span class="bdg" style="background:#8E7BF2">지원</span></td><td><span class="dpill" style="background:#7E5FFC">D-9</span><span class="dnote">서류 발표</span></td><td class="lk">🔗</td></tr>
+                      <tr><td class="co">라인</td><td class="jb">서버 개발자</td><td><span class="bdg" style="background:#9EA3B8">관심</span></td><td><span class="dpill" style="background:#7E5FFC">D-14</span><span class="dnote">서류 마감</span></td><td class="lk">🔗</td></tr>
+                      <tr><td class="co">배달의민족</td><td class="jb">안드로이드 개발자</td><td><span class="bdg" style="background:#27A05D">최종합격</span></td><td><span class="dpill" style="background:#A1A5BA">D+3</span><span class="dnote">처우 협의</span></td><td class="lk">🔗</td></tr>
+                      <tr class="off"><td class="co">쿠팡</td><td class="jb">프론트엔드 개발자</td><td><span class="bdg" style="background:#E0524F">불합격</span></td><td><span class="dnote">종료된 지원</span></td><td class="lk">🔗</td></tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+
+              <div class="card det">
+                <div class="hd"><b>상세 / 편집</b><span>삭제</span></div>
+                <div class="fd"><span>회사 색 (캘린더 표시)</span>
+                  <div class="dots"><i style="background:#7C5CFC">✓</i><i style="background:#3BA3E0"></i><i style="background:#27A05D"></i><i style="background:#E0A02B"></i><i style="background:#E0524F"></i></div>
+                </div>
+                <div class="fd"><span>회사</span><div class="in focus">토스</div></div>
+                <div class="fd"><span>직무</span><div class="in">프론트엔드 개발자</div></div>
+                <div class="two">
+                  <div class="fd"><span>고용형태</span><div class="in sel">정규직<i aria-hidden="true">▾</i></div></div>
+                  <div class="fd"><span>지원 경로</span><div class="in sel">공고 지원<i aria-hidden="true">▾</i></div></div>
+                </div>
+                <div class="two">
+                  <div class="fd"><span>서류 마감일</span><div class="in">2026-09-18</div></div>
+                  <div class="fd"><span>다음 일정일</span><div class="in">2026-09-15</div></div>
+                </div>
+                <div class="fd"><span>메모</span><div class="in memo">기술 면접 대비 — 렌더링 최적화 사례 정리</div></div>
+                <div class="fd"><span>진행 단계</span>
+                  <div class="stepper"><span>지원</span><i aria-hidden="true">›</i><span>서류합격</span><i aria-hidden="true">›</i><span>1차면접</span><i aria-hidden="true">›</i><span class="on" style="background:#6A44F0">2차면접</span></div>
+                </div>
+                <div class="mvbtn"><button type="button">← 이전 단계</button><button type="button" class="p">다음 단계 →</button></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <ul class="meta">
+        <li><span>역할</span>기획 · UX/UI 디자인 · WPF 클라이언트 개발</li>
+        <li><span>기간</span>2026.07 — 1개월</li>
+        <li><span>구현</span>.NET 8 · WPF · MVVM · EF Core 8 + SQLite</li>
+        <li><span>AI</span>Google Gemini 2.5 Flash</li>
+      </ul>
     </div>
   </section>
 
@@ -466,7 +524,6 @@ footer a:hover { color: var(--sig); }
   <section class="sec soft" id="why">
     <div class="wrap">
       <header class="sec-head">
-        <span class="pill">왜 만들었나</span>
         <h2>같은 여섯 건을<br>두 번 그렸습니다</h2>
         <p class="lead">국내 취준생 대부분은 지원 현황을 엑셀 시트로 관리합니다. 시트는 기록은 잘 되지만, 무엇이 급한지는 알려주지 않습니다.</p>
       </header>
@@ -865,7 +922,7 @@ footer a:hover { color: var(--sig); }
   <section class="sec" id="input">
     <div class="wrap">
       <header class="sec-head">
-        <span class="pill">입력 마찰 줄이기</span>
+        <span class="pill">자격증 · 자소서 입력</span>
         <h2>표기 흔들림과 오타를<br>목록에서 막습니다</h2>
         <p class="lead">자격증과 희망직무는 직접 타이핑하지 않고 목록에서 검색해 담습니다. 채용 사이트 자동 연동이 불가능한 만큼, 입력 자체를 가볍게 만드는 쪽으로 방향을 틀었습니다.</p>
       </header>
@@ -925,64 +982,8 @@ footer a:hover { color: var(--sig); }
     </div>
   </section>
 
-  <!-- ════ 배운 점 ════ -->
-  <section class="sec band" id="learn">
-    <div class="wrap">
-      <header class="sec-head">
-        <span class="pill">배운 점</span>
-        <h2>이 프로젝트에서<br>배운 것</h2>
-      </header>
-
-      <div class="learn">
-        <article><p class="q">보는 순서를 먼저 정하고 설계하는 법</p><p>처음에는 필요한 정보를 한 화면에 모두 담으려 했고, 그 결과 무엇부터 봐야 할지 알 수 없는 화면이 됐습니다. 이동과 작업을 가르고 읽는 순서를 고정하자 같은 양의 정보가 갑자기 읽히기 시작했습니다.</p></article>
-        <article><p class="q">색을 아껴 쓰면 경고색이 제 역할을 한다</p><p>대표색 하나를 정해 강조 면에만 쓰고 나머지 화면을 비웠습니다. 그 덕분에 마감 3일 이내에만 켜지는 빨강이 목록에서 가장 먼저 보입니다.</p></article>
-        <article><p class="q">숫자보다 그림이 사람을 움직인다</p><p>"지원 6건, 서류합격 4건"이라는 텍스트는 잘 읽히지 않았습니다. 같은 값을 도넛과 막대로 보여주자 자기 활동을 돌아보게 되는 화면이 됐습니다.</p></article>
-        <article><p class="q">자동화가 막히면 손을 덜 쓰게 만든다</p><p>채용 사이트 자동 연동이 불가능하다는 걸 확인한 뒤, 기능을 포기하는 대신 입력 자체를 가볍게 만드는 쪽으로 방향을 틀었습니다. 작은 마찰 하나가 실제 사용 여부를 가릅니다.</p></article>
-        <article><p class="q">화면은 지금 상태를 계속 말해야 한다</p><p>AI 생성처럼 시간이 걸리는 동작에서 아무 반응이 없으면 사용자는 고장으로 받아들입니다. 버튼 라벨을 바꾸고 다시 눌리지 않게 막는 것만으로 체감이 달라졌습니다.</p></article>
-        <article><p class="q">완성도는 감각보다 체계에서 나온다</p><p>색·여백·버튼 종류를 한 곳에 규격으로 정하고 모든 화면이 그것을 쓰게 하자, 새 화면을 만들어도 자연스럽게 같은 앱처럼 보이고 수정도 한 번에 반영됐습니다.</p></article>
-      </div>
-
-      <dl class="counts">
-        <div><dt>1달</dt><dd>기획부터 구현까지</dd></div>
-        <div><dt>5</dt><dd>사이드바로 오가는 화면</dd></div>
-        <div><dt>9</dt><dd>XAML View 파일</dd></div>
-        <div><dt>8</dt><dd>직접 만든 IValueConverter</dd></div>
-        <div><dt>3,396</dt><dd>C# 코드 줄 수</dd></div>
-      </dl>
-    </div>
-  </section>
-
-  <!-- ════ 향후 ════ -->
-  <section class="sec" id="next">
-    <div class="wrap">
-      <header class="sec-head">
-        <span class="pill">향후 발전 방향</span>
-        <h2>다음에 할 일</h2>
-      </header>
-      <ul class="plans">
-        <li><b>API 키 분리</b><span>지금은 소스에 상수로 박혀 있습니다. 환경 변수나 설정 파일로 옮기고 사용자가 자기 키를 넣을 수 있게 합니다.</span></li>
-        <li><b>서버 DB 전환과 동기화</b><span>EF Core의 provider만 바꿔 MySQL로 옮기고, 여러 기기에서 같은 기록을 봅니다.</span></li>
-        <li><b>브라우저 확장 연동</b><span>공고 페이지에서 한 번에 담도록 해 입력 부담을 더 줄입니다.</span></li>
-        <li><b>탈락 이력 기반 피드백</b><span>쌓인 진행 이력으로 어느 단계에서 자주 막히는지 분석하고, 자소서 문항별 첨삭까지 확장합니다.</span></li>
-        <li><b>알림과 주간 리포트</b><span>D-day 색 경고를 넘어 데스크톱 알림과 주간 요약으로 구직 활동이 끊기지 않게 합니다.</span></li>
-        <li><b>지역 청년 구직 실태 데이터</b><span>단계별 이탈 지점과 평균 소요 기간을 익명 통계로 모아, 취업지원센터·지자체 청년정책 부서와 협력할 가능성을 봅니다.</span></li>
-      </ul>
-
-      <div class="honest" style="margin-top:28px">
-        <h3>"원본 사이트에서 지원하면 자동으로 옮겨지나요?"</h3>
-        <p class="body" style="margin-top:12px">아니요. 자동 연동은 구조적으로 불가능합니다.</p>
-        <ul>
-          <li>잡코리아 · 사람인 · 원티드는 "내가 어디에 지원했는지"를 외부에 열어주는 공개 API가 없습니다.</li>
-          <li>자동 수집에는 로그인 세션 탈취나 크롤링이 필요하고, 이는 약관 위반입니다.</li>
-          <li>해외 트래커인 Simplify · Teal도 수동 입력과 브라우저 확장을 조합합니다. 100% 자동은 없습니다.</li>
-        </ul>
-        <p class="o">그래서 잡모아의 가치는 자동 연동이 아니라, <span class="hl">흩어진 것을 한 곳에 모으고 입력을 최대한 가볍게 만드는 것</span>에 있습니다.</p>
-      </div>
-    </div>
-  </section>
-
   <!-- ════ 마지막 ════ -->
-  <section class="sec final soft">
+  <section class="sec final">
     <div class="wrap">
       <h2>흩어진 지원 현황을<br>한 곳에 <span class="hl">모아서</span></h2>
       <p class="lead" style="margin-top:16px">Visual Studio 2022에서 JobMore.csproj를 열고 F5를 누르면 바로 실행됩니다. 따로 설치할 DB는 없습니다.</p>
