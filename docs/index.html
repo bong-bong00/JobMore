@@ -1,0 +1,1439 @@
+<title>잡모아 JobMore</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="description" content="흩어진 취업 지원 현황을 한 곳에 모으는 WPF 데스크톱 앱 잡모아 소개">
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Gothic+A1:wght@400;500;700;800;900&family=IBM+Plex+Sans+KR:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap">
+
+<style>
+/* 레이아웃: 앱의 구조를 그대로 페이지에 옮긴다. 왼쪽 보라 레일이 달린 창 목업이
+   섹션마다 한 번씩 나오고, 단계 배지·D-day 칩·카드는 앱이 쓰는 색과 모양을 그대로 쓴다.
+   보라는 강조 면에만, 상태색(빨강·민트·주황)은 신호로만 쓴다. */
+:root {
+  --sig: #7C5CFC;
+  --sig-deep: #6A45F0;
+  --sig-soft: #F0ECFE;
+  --bg: #FFFFFF;
+  --soft: #F4F6FB;
+  --line: #E7ECF3;
+  --fg: #16223A;
+  --fg-2: #56657E;
+  --fg-3: #8794A8;
+  --dim: #B6C0CE;
+  --band: #141C2E;
+  --band-fg: #EEF1F7;
+  --band-2: #96A3B8;
+  --band-card: #1E2840;
+  --band-line: #2C3650;
+  --mint: #1F9D57;
+  --coral: #D64545;
+  --amber: #E08A2B;
+  --past: #9EA3B8;
+  --btn: #16223A;
+  --btn-fg: #FFFFFF;
+  --ghost: #EEF1F7;
+  --chrome: #E9EDF4;
+  --shadow: 0 24px 54px rgba(22, 34, 58, .14);
+  --shadow-sm: 0 8px 20px rgba(22, 34, 58, .07);
+  --display: "Gothic A1", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+  --body: "IBM Plex Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, Menlo, monospace;
+  --nav-bg: rgba(255, 255, 255, .88);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --sig: #9B82FC;
+    --sig-deep: #B6A3FD;
+    --sig-soft: #252247;
+    --bg: #11151F;
+    --soft: #181E2B;
+    --line: #28303F;
+    --fg: #EDF0F6;
+    --fg-2: #AAB5C6;
+    --fg-3: #818D9F;
+    --dim: #4B5566;
+    --band: #0A0D14;
+    --band-fg: #EDF0F6;
+    --band-2: #8D99AC;
+    --band-card: #181E2B;
+    --band-line: #28303F;
+    --mint: #4CC185;
+    --coral: #F0706E;
+    --amber: #EDA95A;
+    --past: #727C91;
+    --btn: #9B82FC;
+    --btn-fg: #12101F;
+    --ghost: #202836;
+    --chrome: #202836;
+    --shadow: 0 24px 54px rgba(0, 0, 0, .5);
+    --shadow-sm: 0 8px 20px rgba(0, 0, 0, .35);
+    --nav-bg: rgba(17, 21, 31, .88);
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --sig: #9B82FC;
+  --sig-deep: #B6A3FD;
+  --sig-soft: #252247;
+  --bg: #11151F;
+  --soft: #181E2B;
+  --line: #28303F;
+  --fg: #EDF0F6;
+  --fg-2: #AAB5C6;
+  --fg-3: #818D9F;
+  --dim: #4B5566;
+  --band: #0A0D14;
+  --band-fg: #EDF0F6;
+  --band-2: #8D99AC;
+  --band-card: #181E2B;
+  --band-line: #28303F;
+  --mint: #4CC185;
+  --coral: #F0706E;
+  --amber: #EDA95A;
+  --past: #727C91;
+  --btn: #9B82FC;
+  --btn-fg: #12101F;
+  --ghost: #202836;
+  --chrome: #202836;
+  --shadow: 0 24px 54px rgba(0, 0, 0, .5);
+  --shadow-sm: 0 8px 20px rgba(0, 0, 0, .35);
+  --nav-bg: rgba(17, 21, 31, .88);
+  color-scheme: dark;
+}
+
+/* ── 기본 ── */
+html { scroll-padding-top: 76px; }
+@media (prefers-reduced-motion: no-preference) { html { scroll-behavior: smooth; } }
+body {
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--body);
+  font-size: 16.5px;
+  line-height: 1.75;
+  word-break: keep-all;
+  overflow-wrap: anywhere;
+  -webkit-font-smoothing: antialiased;
+}
+body::before {
+  content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px);
+  z-index: 30; background: var(--bg);
+}
+h1, h2, h3, h4, p, ol, ul, dl, dd, figure, blockquote { margin: 0; }
+ol, ul { padding: 0; list-style: none; }
+h1, h2, h3, h4 { font-family: var(--display); font-weight: 800; text-wrap: balance; }
+a { color: inherit; }
+img { display: block; max-width: 100%; }
+:focus-visible { outline: 3px solid var(--sig); outline-offset: 3px; border-radius: 7px; }
+button { font: inherit; color: inherit; }
+
+.wrap {
+  max-width: 1120px;
+  margin-inline: auto;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+.section { padding-block: clamp(46px, 5.4vw, 86px); }
+.band { background: var(--band); color: var(--band-fg); }
+.band h2, .band h3, .band h4 { color: var(--band-fg); }
+.soft { background: var(--soft); }
+
+h1 { font-size: clamp(38px, 6.2vw, 68px); font-weight: 900; line-height: 1.15; letter-spacing: -.035em; }
+h2 { font-size: clamp(28px, 3.9vw, 46px); line-height: 1.26; letter-spacing: -.032em; }
+h3 { font-size: clamp(21px, 2.3vw, 29px); line-height: 1.34; letter-spacing: -.026em; }
+h4 { font-size: 18px; line-height: 1.45; letter-spacing: -.02em; font-weight: 700; }
+.eyebrow {
+  font-family: var(--mono); font-size: 12.5px; font-weight: 600;
+  letter-spacing: .1em; text-transform: uppercase; color: var(--sig);
+  margin-bottom: 14px;
+}
+.band .eyebrow { color: var(--sig-deep); }
+.lead { color: var(--fg-2); font-size: 17.5px; max-width: 32em; }
+.band .lead, .band .body { color: var(--band-2); }
+.body { color: var(--fg-2); max-width: 34em; }
+mark {
+  background: linear-gradient(transparent 58%, var(--sig-soft) 58%);
+  color: inherit; padding: 0 .06em;
+  -webkit-box-decoration-break: clone; box-decoration-break: clone;
+}
+.band mark { background: linear-gradient(transparent 58%, rgba(124, 92, 252, .4) 58%); }
+.num { font-family: var(--mono); font-variant-numeric: tabular-nums; }
+
+.sec-head { margin-bottom: clamp(26px, 3vw, 44px); }
+.sub-head { margin: clamp(38px, 4vw, 62px) 0 20px; }
+
+/* ── 버튼 ── */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  min-height: 52px; padding: 0 24px; border-radius: 14px;
+  background: var(--btn); color: var(--btn-fg); border: 0;
+  font-family: var(--display); font-weight: 700; font-size: 16px;
+  text-decoration: none; cursor: pointer;
+  transition: transform .15s ease;
+}
+.btn:hover { transform: translateY(-2px); }
+.btn.sig { background: var(--sig); color: #fff; }
+.btn.ghost { background: var(--ghost); color: var(--fg); }
+.cta-row { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 28px; }
+
+/* ── 내비게이션 ── */
+.nav {
+  position: sticky; top: env(safe-area-inset-top, 0px); z-index: 40;
+  background: var(--nav-bg); backdrop-filter: blur(14px);
+  border-bottom: 1px solid var(--line);
+}
+.nav-inner { display: flex; align-items: center; gap: 18px; min-height: 62px; padding-block: 8px; }
+.brand {
+  display: inline-flex; align-items: center; gap: 9px;
+  font-family: var(--display); font-weight: 900; font-size: 19px;
+  letter-spacing: -.03em; text-decoration: none;
+}
+.brand .mark {
+  width: 28px; height: 28px; border-radius: 9px; flex: none;
+  background: linear-gradient(#8366FC, #6E4EF5);
+  display: grid; place-items: center; color: #fff; font-size: 14px; font-weight: 900;
+}
+.nav-links { display: flex; gap: 4px; margin-left: auto; flex-wrap: wrap; }
+.nav-links a {
+  text-decoration: none; font-size: 14.5px; font-weight: 500;
+  color: var(--fg-2); padding: 8px 11px; border-radius: 10px;
+}
+.nav-links a:hover { background: var(--ghost); color: var(--fg); }
+.nav .btn { min-height: 42px; padding: 0 16px; font-size: 14.5px; border-radius: 11px; }
+@media (max-width: 860px) {
+  .nav-links { display: none; }
+  .nav .btn { margin-left: auto; }
+}
+
+/* ── 히어로 ── */
+.hero { padding-block: clamp(34px, 4.6vw, 70px) clamp(30px, 4vw, 54px); }
+.hero-grid { display: grid; gap: clamp(30px, 4vw, 56px); align-items: center; grid-template-columns: minmax(0, 1fr); }
+@media (min-width: 1000px) { .hero-grid { grid-template-columns: minmax(0, .95fr) minmax(0, 1.05fr); } }
+.hero h1 { margin-bottom: 20px; }
+.hero .lead { font-size: 18px; }
+.hero-meta {
+  display: flex; flex-wrap: wrap; gap: 8px; margin-top: 26px;
+}
+.hero-meta li {
+  font-family: var(--mono); font-size: 12.5px; font-weight: 500;
+  padding: 6px 11px; border-radius: 999px;
+  border: 1px solid var(--line); color: var(--fg-2); background: var(--bg);
+}
+
+/* ── 앱 창 목업 ── */
+.win {
+  border-radius: 16px; overflow: hidden; background: var(--bg);
+  box-shadow: var(--shadow); border: 1px solid var(--line);
+  min-width: 0;
+}
+.win-bar {
+  display: flex; align-items: center; gap: 8px;
+  padding: 9px 13px; background: var(--chrome); border-bottom: 1px solid var(--line);
+}
+.win-bar .t {
+  font-family: var(--display); font-weight: 700; font-size: 12.5px; color: var(--fg-2);
+}
+.win-bar .ctl { margin-left: auto; display: flex; gap: 14px; color: var(--fg-3); font-size: 11px; }
+.win-body { display: flex; min-height: 0; background: var(--soft); }
+.rail {
+  width: 128px; flex: none; background: #7C5CFC; padding: 14px 10px;
+  display: flex; flex-direction: column; gap: 3px;
+}
+.rail .logo {
+  display: flex; align-items: center; gap: 8px; padding: 2px 6px 16px;
+  font-family: var(--display); font-weight: 900; font-size: 14px; color: #fff;
+}
+.rail .logo i { width: 20px; height: 20px; border-radius: 6px; background: rgba(255,255,255,.22); flex: none; }
+.rail a, .rail span.item {
+  display: block; padding: 8px 10px; border-radius: 9px;
+  font-size: 12.5px; font-weight: 500; color: #E6DEFD; text-decoration: none;
+}
+.rail .item.on { background: #fff; color: #6A45F0; font-weight: 700; }
+.rail .foot { margin-top: auto; font-size: 10.5px; color: #CFC2FB; padding: 0 6px; }
+.pane { flex: 1 1 auto; min-width: 0; padding: 15px; display: grid; gap: 11px; }
+.pane-title { font-family: var(--display); font-weight: 800; font-size: 16px; }
+@media (max-width: 620px) {
+  .rail { width: 46px; padding: 12px 6px; }
+  .rail .logo span, .rail .item-label, .rail .foot { display: none; }
+  .rail .item { text-align: center; padding: 9px 4px; }
+}
+
+/* 카드 (앱의 Card 스타일) */
+.card {
+  background: var(--bg); border: 1px solid var(--line); border-radius: 13px;
+  padding: 13px 15px; min-width: 0;
+}
+.tiles { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; }
+.tile { background: var(--bg); border: 1px solid var(--line); border-radius: 12px; padding: 10px 12px; }
+.tile .k { font-size: 10.5px; color: var(--fg-3); display: block; line-height: 1.5; min-height: 3em; }
+.tile .v { font-family: var(--mono); font-weight: 600; font-size: 21px; letter-spacing: -.02em; }
+.tile .v.sig { color: var(--sig); }
+.tile .v.coral { color: var(--coral); }
+@media (max-width: 620px) { .tiles { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+
+/* 지원 목록 행 */
+.rows { display: grid; gap: 7px; }
+.row {
+  display: flex; align-items: center; gap: 10px;
+  background: var(--bg); border: 1px solid var(--line); border-radius: 12px;
+  padding: 10px 12px; min-width: 0;
+}
+.row.sel { border-color: var(--sig); box-shadow: 0 0 0 2px var(--sig-soft); }
+.row .co { font-family: var(--display); font-weight: 700; font-size: 13.5px; }
+.row .po { font-size: 11.5px; color: var(--fg-3); }
+.row .right { margin-left: auto; display: flex; align-items: center; gap: 8px; flex: none; }
+.stage {
+  font-size: 11px; font-weight: 600; color: #fff; border-radius: 999px;
+  padding: 3px 9px; white-space: nowrap; flex: none;
+}
+.dd {
+  font-family: var(--mono); font-size: 11.5px; font-weight: 600;
+  white-space: nowrap; flex: none;
+}
+.dd.hot { color: var(--coral); }
+.dd.plan { color: var(--sig); }
+.dd.past { color: var(--past); }
+
+/* ── 논지 ── */
+.thesis-lines { display: grid; gap: 8px; margin-bottom: clamp(32px, 4vw, 54px); }
+.thesis-lines p {
+  font-family: var(--display); font-weight: 800;
+  font-size: clamp(22px, 3.1vw, 37px); line-height: 1.34; letter-spacing: -.03em;
+  color: var(--dim);
+}
+.thesis-lines p.on { color: var(--fg); }
+.facts { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 18px 24px; }
+.facts dt {
+  font-family: var(--mono); font-weight: 600; font-variant-numeric: tabular-nums;
+  font-size: clamp(30px, 3.6vw, 42px); letter-spacing: -.04em; color: var(--sig);
+  line-height: 1.1;
+}
+.facts dd { font-size: 14.5px; color: var(--fg-2); margin-top: 6px; }
+
+/* ── 문제 카드 ── */
+.problems { display: grid; grid-template-columns: repeat(auto-fit, minmax(380px, 1fr)); gap: 14px; }
+.problem {
+  background: var(--bg); border: 1px solid var(--line); border-radius: 18px;
+  padding: 22px; min-width: 0;
+}
+.problem .tag {
+  display: inline-block; font-family: var(--mono); font-size: 11.5px; font-weight: 600;
+  color: var(--sig); background: var(--sig-soft); padding: 4px 9px; border-radius: 7px;
+  margin-bottom: 13px;
+}
+.problem h4 { margin-bottom: 9px; }
+.problem p { font-size: 14.5px; color: var(--fg-2); }
+
+/* ── 기능 ── */
+.features { display: grid; grid-template-columns: repeat(auto-fit, minmax(188px, 1fr)); gap: 12px; }
+.feature {
+  display: flex; flex-direction: column; gap: 7px;
+  background: var(--soft); border: 1px solid transparent; border-radius: 16px;
+  padding: 20px; text-decoration: none; min-width: 0;
+  transition: border-color .15s ease, transform .15s ease;
+}
+.feature:hover { border-color: var(--sig); transform: translateY(-2px); }
+.feature h4 { font-size: 16.5px; }
+.feature p { font-size: 14px; color: var(--fg-2); flex: 1 1 auto; }
+.feature .go { font-family: var(--mono); font-size: 12px; font-weight: 600; color: var(--sig); }
+
+/* ── 2열 섹션 ── */
+.split { display: grid; gap: clamp(26px, 3.4vw, 50px); align-items: center; grid-template-columns: minmax(0, 1fr); }
+@media (min-width: 940px) {
+  .split { grid-template-columns: minmax(0, 1fr) minmax(0, 1.08fr); }
+  .split.flip > :first-child { order: 2; }
+}
+
+/* ── 파이프라인 ── */
+.pipe { display: flex; flex-wrap: wrap; gap: 7px; margin-bottom: 22px; }
+.pipe button {
+  border: 1px solid var(--band-line); background: transparent; color: var(--band-2);
+  border-radius: 999px; padding: 7px 14px; font-size: 13.5px; font-weight: 600;
+  cursor: pointer; font-family: var(--display);
+  transition: background .15s ease, color .15s ease, border-color .15s ease;
+}
+.pipe button:hover { border-color: var(--band-2); color: var(--band-fg); }
+.pipe button[aria-pressed="true"] { background: #fff; color: #16223A; border-color: #fff; }
+.pipe .sep { color: var(--band-line); align-self: center; font-size: 13px; }
+.logbox { background: var(--band-card); border: 1px solid var(--band-line); border-radius: 16px; padding: 20px; }
+.logbox .hd { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; }
+.logbox .hd .co { font-family: var(--display); font-weight: 800; font-size: 17px; }
+.logbox .hd .po { font-size: 12.5px; color: var(--band-2); }
+.loglist { display: grid; gap: 0; }
+.loglist li {
+  display: grid; grid-template-columns: 14px minmax(0, 1fr) auto; gap: 11px;
+  align-items: center; padding: 7px 0; font-size: 14px;
+}
+.loglist li .pip { width: 9px; height: 9px; border-radius: 50%; background: var(--band-line); justify-self: center; }
+.loglist li.done .pip { background: var(--sig); }
+.loglist li.done { color: var(--band-fg); }
+.loglist li { color: var(--band-2); }
+.loglist li .when { font-family: var(--mono); font-size: 12px; color: var(--band-2); }
+.pipe-hint { font-size: 13.5px; color: var(--band-2); margin-top: 14px; }
+
+/* ── 도넛 ── */
+.donut-wrap { display: flex; flex-wrap: wrap; gap: 24px; align-items: center; }
+.donut-wrap svg { width: 170px; height: 170px; flex: none; }
+.legend { display: grid; gap: 7px; min-width: 0; flex: 1 1 180px; }
+.legend li { display: flex; align-items: center; gap: 9px; font-size: 14px; }
+.legend .sw { width: 11px; height: 11px; border-radius: 3px; flex: none; }
+.legend .pc { margin-left: auto; font-family: var(--mono); font-size: 13px; color: var(--fg-2); }
+.band .legend .pc { color: var(--band-2); }
+
+/* ── 퍼널 ── */
+.funnel { display: grid; gap: 9px; }
+.funnel .step { min-width: 0; }
+.funnel .lab { display: flex; font-size: 13.5px; margin-bottom: 5px; }
+.funnel .lab .n { margin-left: auto; font-family: var(--mono); font-weight: 600; }
+.funnel .track { height: 11px; border-radius: 999px; background: var(--band-line); overflow: hidden; }
+.funnel .fill { height: 100%; border-radius: 999px; background: var(--sig); }
+
+/* ── D-day 데모 ── */
+.dday-demo { background: var(--bg); border: 1px solid var(--line); border-radius: 18px; padding: 22px; }
+.dday-demo .big {
+  font-family: var(--mono); font-weight: 600; font-size: clamp(38px, 6vw, 60px);
+  letter-spacing: -.03em; line-height: 1.1;
+}
+.dday-demo input[type="range"] { width: 100%; margin: 18px 0 6px; accent-color: var(--sig); }
+.dday-demo .scale { display: flex; justify-content: space-between; font-family: var(--mono); font-size: 11.5px; color: var(--fg-3); }
+.dday-demo .caption { font-size: 14px; color: var(--fg-2); margin-top: 14px; min-height: 3em; }
+.legend-dd { display: grid; gap: 8px; margin-top: 18px; padding-top: 16px; border-top: 1px solid var(--line); }
+.legend-dd li { display: flex; align-items: center; gap: 9px; font-size: 13.5px; color: var(--fg-2); }
+.legend-dd .sw { width: 11px; height: 11px; border-radius: 50%; flex: none; }
+
+/* ── AI 데모 ── */
+.ai-grid { display: grid; gap: 14px; grid-template-columns: minmax(0, 1fr); }
+@media (min-width: 900px) { .ai-grid { grid-template-columns: minmax(0, .82fr) minmax(0, 1.18fr); } }
+.toggles { display: grid; gap: 7px; }
+.toggle {
+  display: flex; align-items: center; gap: 10px; cursor: pointer;
+  background: var(--band-card); border: 1px solid var(--band-line);
+  border-radius: 12px; padding: 11px 13px; min-width: 0;
+}
+.toggle:hover { border-color: var(--sig); }
+.toggle input { accent-color: var(--sig); width: 16px; height: 16px; flex: none; }
+.toggle .tx { min-width: 0; }
+.toggle .tt { font-size: 14px; font-weight: 600; display: block; }
+.toggle .ts { font-size: 12px; color: var(--band-2); }
+.promptbox {
+  background: var(--band-card); border: 1px solid var(--band-line); border-radius: 16px;
+  padding: 18px; display: grid; gap: 14px; min-width: 0;
+}
+.promptbox .cap {
+  font-family: var(--mono); font-size: 11.5px; font-weight: 600; letter-spacing: .07em;
+  text-transform: uppercase; color: var(--band-2);
+}
+.promptbox pre {
+  margin: 0; font-family: var(--mono); font-size: 12.5px; line-height: 1.75;
+  color: var(--band-fg); white-space: pre-wrap; overflow-x: auto;
+  background: rgba(0, 0, 0, .22); border-radius: 11px; padding: 14px;
+}
+.promptbox pre .k { color: var(--sig-deep); }
+.gen-row { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.gen-btn {
+  display: inline-flex; align-items: center; gap: 8px; border: 0; cursor: pointer;
+  background: var(--sig); color: #fff; border-radius: 12px; padding: 11px 18px;
+  font-family: var(--display); font-weight: 700; font-size: 14.5px;
+}
+.gen-btn[disabled] { opacity: .6; cursor: default; }
+.gen-note { font-size: 12.5px; color: var(--band-2); }
+.result {
+  background: var(--band-card); border: 1px solid var(--band-line); border-radius: 16px;
+  padding: 18px; font-size: 14.5px; line-height: 1.85; color: var(--band-fg);
+  white-space: pre-wrap; min-height: 6em;
+}
+.result .ph { color: var(--band-2); }
+.fallback-note {
+  display: flex; gap: 11px; align-items: flex-start;
+  border-left: 3px solid var(--sig); padding-left: 14px; margin-top: 18px;
+  font-size: 14px; color: var(--band-2);
+}
+
+/* ── 자격증 검색 데모 ── */
+.search-demo { background: var(--bg); border: 1px solid var(--line); border-radius: 18px; padding: 20px; }
+.search-field {
+  display: flex; align-items: center; gap: 9px;
+  border: 1px solid var(--line); border-radius: 12px; padding: 11px 13px;
+  background: var(--soft);
+}
+.search-field:focus-within { border-color: var(--sig); background: var(--bg); }
+.search-field input { border: 0; background: transparent; font: inherit; font-size: 15px; width: 100%; min-width: 0; color: var(--fg); }
+.search-field input:focus { outline: none; }
+.search-field .ic { color: var(--fg-3); font-size: 14px; flex: none; }
+.hits { display: grid; gap: 6px; margin-top: 12px; max-height: 232px; overflow-y: auto; }
+.hit {
+  display: flex; align-items: center; gap: 10px;
+  border: 1px solid var(--line); border-radius: 11px; padding: 9px 12px; min-width: 0;
+}
+.hit .nm { font-size: 14px; font-weight: 600; min-width: 0; }
+.hit .is { font-size: 11.5px; color: var(--fg-3); }
+.hit button {
+  margin-left: auto; flex: none; border: 1px solid var(--sig); color: var(--sig);
+  background: transparent; border-radius: 9px; padding: 5px 11px;
+  font-size: 12.5px; font-weight: 700; cursor: pointer; font-family: var(--display);
+}
+.hit button:hover { background: var(--sig); color: #fff; }
+.hit.added button { border-color: var(--line); color: var(--fg-3); cursor: default; }
+.hit.added button:hover { background: transparent; color: var(--fg-3); }
+.hits .empty { font-size: 13.5px; color: var(--fg-3); padding: 14px 2px; }
+.basket { margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--line); }
+.basket .cap { font-family: var(--mono); font-size: 11.5px; font-weight: 600; letter-spacing: .07em; text-transform: uppercase; color: var(--fg-3); }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 9px; }
+.chip {
+  font-size: 12.5px; font-weight: 600; background: var(--sig-soft); color: var(--sig-deep);
+  border-radius: 999px; padding: 5px 11px;
+}
+.chips .none { font-size: 13px; color: var(--fg-3); font-weight: 400; }
+
+/* ── 달력 ── */
+.cal { background: var(--bg); border: 1px solid var(--line); border-radius: 14px; padding: 14px; }
+.cal-hd { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+.cal-hd .m { font-family: var(--display); font-weight: 800; font-size: 15px; }
+.cal-hd .nav-b { margin-left: auto; display: flex; gap: 6px; }
+.cal-hd .nav-b span {
+  width: 26px; height: 26px; border-radius: 8px; background: var(--soft);
+  display: grid; place-items: center; font-size: 12px; color: var(--fg-2);
+}
+.cal-grid { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 4px; }
+.cal-grid .wh { font-size: 10.5px; color: var(--fg-3); text-align: center; padding-bottom: 4px; }
+.cal-grid .wh:first-child { color: var(--coral); }
+.cal-cell {
+  aspect-ratio: 1 / .92; border-radius: 9px; border: 1px solid transparent;
+  padding: 4px 5px; font-family: var(--mono); font-size: 11px; color: var(--fg-2);
+  display: flex; flex-direction: column; gap: 2px; min-width: 0;
+}
+.cal-cell.out { color: var(--dim); }
+.cal-cell.today { border-color: var(--sig); background: var(--sig-soft); color: var(--sig-deep); font-weight: 600; }
+.cal-cell .ev {
+  font-family: var(--body); font-size: 9.5px; font-weight: 600; color: #fff;
+  border-radius: 5px; padding: 1px 4px; overflow: hidden; white-space: nowrap;
+  text-overflow: ellipsis; line-height: 1.6;
+}
+
+/* ── 기술 스택 ── */
+.stack { display: grid; gap: 12px; grid-template-columns: repeat(auto-fit, minmax(322px, 1fr)); }
+.stack-card { background: var(--bg); border: 1px solid var(--line); border-radius: 16px; padding: 20px; min-width: 0; }
+.stack-card .k {
+  font-family: var(--mono); font-size: 11.5px; font-weight: 600; letter-spacing: .07em;
+  text-transform: uppercase; color: var(--sig); display: block; margin-bottom: 10px;
+}
+.stack-card h4 { margin-bottom: 8px; }
+.stack-card p { font-size: 14px; color: var(--fg-2); }
+.stack-card ul { display: grid; gap: 5px; margin-top: 10px; }
+.stack-card li { font-size: 13.5px; color: var(--fg-2); display: flex; gap: 8px; }
+.stack-card li::before { content: "—"; color: var(--dim); flex: none; }
+.codename { font-family: var(--mono); font-size: 13px; background: var(--soft); border-radius: 6px; padding: 1px 6px; }
+
+/* ── 숫자 줄 ── */
+.counts { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 16px 20px; margin-top: 30px; }
+.counts div { border-top: 2px solid var(--band-line); padding-top: 12px; }
+.counts dt { font-family: var(--mono); font-weight: 600; font-size: 26px; letter-spacing: -.03em; }
+.counts dd { font-size: 13px; color: var(--band-2); margin-top: 2px; }
+
+/* ── 팔레트 ── */
+.palette { display: grid; grid-template-columns: repeat(auto-fit, minmax(118px, 1fr)); gap: 10px; }
+.swatch { border-radius: 14px; overflow: hidden; border: 1px solid var(--line); }
+.swatch .fill { height: 62px; }
+.swatch .meta { padding: 9px 11px; background: var(--bg); }
+.swatch .nm { font-size: 12.5px; font-weight: 600; display: block; }
+.swatch .hx { font-family: var(--mono); font-size: 11px; color: var(--fg-3); }
+
+/* ── 원칙 ── */
+.rules { display: grid; grid-template-columns: repeat(auto-fit, minmax(322px, 1fr)); gap: 22px 24px; }
+.rules li { min-width: 0; }
+.rules .n { font-family: var(--mono); font-size: 12px; font-weight: 600; color: var(--sig); }
+.rules h4 { margin: 4px 0 6px; font-size: 16.5px; }
+.rules p { font-size: 14px; color: var(--fg-2); }
+
+/* ── 배운 점 ── */
+.learn { display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(290px, 1fr)); }
+.learn article {
+  background: var(--band-card); border: 1px solid var(--band-line);
+  border-radius: 18px; padding: 22px; min-width: 0;
+}
+.learn .q {
+  font-family: var(--display); font-weight: 800; font-size: 18.5px;
+  letter-spacing: -.02em; margin-bottom: 10px; line-height: 1.4;
+}
+.learn p { font-size: 14.5px; color: var(--band-2); }
+.plans { display: grid; gap: 11px; grid-template-columns: repeat(auto-fit, minmax(322px, 1fr)); }
+.plans li {
+  background: var(--bg); border: 1px solid var(--line); border-radius: 15px;
+  padding: 18px; min-width: 0;
+}
+.plans b { display: block; font-family: var(--display); font-size: 16px; margin-bottom: 6px; }
+.plans span { font-size: 14px; color: var(--fg-2); }
+
+/* ── 한계 ── */
+.honest {
+  border: 1px solid var(--line); border-radius: 20px; padding: clamp(22px, 3vw, 34px);
+  background: var(--soft);
+}
+.honest ul { display: grid; gap: 9px; margin-top: 16px; }
+.honest li { font-size: 14.5px; color: var(--fg-2); display: flex; gap: 10px; }
+.honest li::before { content: "·"; color: var(--sig); font-weight: 700; flex: none; }
+.honest .out {
+  margin-top: 20px; padding-top: 18px; border-top: 1px solid var(--line);
+  font-size: 15.5px; font-weight: 500;
+}
+
+/* ── 마지막 ── */
+.final { text-align: center; }
+.final h2 { margin-bottom: 16px; }
+.final .lead { margin-inline: auto; }
+.final .cta-row { justify-content: center; }
+
+footer {
+  border-top: 1px solid var(--line); padding-block: 30px;
+  font-size: 13.5px; color: var(--fg-3);
+}
+footer .f-inner { display: flex; flex-wrap: wrap; gap: 10px 20px; align-items: center; }
+footer a { font-weight: 600; color: var(--fg-2); }
+</style>
+
+<header class="nav">
+  <div class="wrap nav-inner">
+    <a class="brand" href="#top"><span class="mark">잡</span>잡모아</a>
+    <nav class="nav-links" aria-label="페이지 목차">
+      <a href="#why">기획</a>
+      <a href="#features">기능</a>
+      <a href="#pipeline">단계 기록</a>
+      <a href="#ai">AI 자소서</a>
+      <a href="#tech">기술</a>
+      <a href="#learn">배운 점</a>
+    </nav>
+    <a class="btn" href="https://github.com/bong-bong00/JobMore" target="_blank" rel="noopener">GitHub</a>
+  </div>
+</header>
+
+<main id="top">
+
+  <!-- ════ 히어로 ════ -->
+  <section class="hero">
+    <div class="wrap hero-grid">
+      <div>
+        <p class="eyebrow">WPF Desktop · MVVM · SQLite</p>
+        <h1>흩어진 지원 현황을,<br><mark>한 곳에 모아서</mark></h1>
+        <p class="lead">엑셀 시트와 메모 앱에 흩어져 있던 지원 기록을 한 화면에 모읍니다. 마감이 임박하면 색으로 먼저 알려주고, 전형 단계를 옮기면 이력이 쌓이고, 자소서는 켜둔 항목만으로 AI가 초안을 씁니다.</p>
+        <div class="cta-row">
+          <a class="btn sig" href="https://github.com/bong-bong00/JobMore" target="_blank" rel="noopener">GitHub 저장소</a>
+          <a class="btn ghost" href="#features">기능 보기</a>
+        </div>
+        <ul class="hero-meta">
+          <li>.NET 8 · WPF</li>
+          <li>EF Core + SQLite</li>
+          <li>Gemini 2.5 Flash</li>
+          <li>화면 5개 · 테이블 5개</li>
+        </ul>
+      </div>
+
+      <div class="win">
+        <div class="win-bar">
+          <span class="t">잡모아 JobMore</span>
+          <span class="ctl" aria-hidden="true"><span>—</span><span>□</span><span>×</span></span>
+        </div>
+        <div class="win-body">
+          <div class="rail">
+            <div class="logo"><i></i><span>잡모아</span></div>
+            <span class="item on"><span class="item-label">지원현황</span><span aria-hidden="true" hidden>■</span></span>
+            <span class="item"><span class="item-label">일정</span></span>
+            <span class="item"><span class="item-label">기록</span></span>
+            <span class="item"><span class="item-label">작성</span></span>
+            <span class="item"><span class="item-label">설정</span></span>
+            <span class="foot">김지원<br>프론트엔드 개발</span>
+          </div>
+          <div class="pane">
+            <div class="pane-title">지원현황</div>
+            <div class="tiles">
+              <div class="tile"><span class="k">이번 주 마감</span><span class="v num sig">2</span></div>
+              <div class="tile"><span class="k">마감 임박 (3일내)</span><span class="v num coral">2</span></div>
+              <div class="tile"><span class="k">면접 진행</span><span class="v num">1</span></div>
+              <div class="tile"><span class="k">서류 합격률</span><span class="v num">80%</span></div>
+            </div>
+            <div class="rows">
+              <div class="row sel">
+                <div><span class="co">토스</span> <span class="po">프론트엔드 개발자</span></div>
+                <div class="right"><span class="dd hot">D-2</span><span class="stage" style="background:#8E24AA">2차면접</span></div>
+              </div>
+              <div class="row">
+                <div><span class="co">네이버</span> <span class="po">데이터 엔지니어</span></div>
+                <div class="right"><span class="dd hot">D-1</span><span class="stage" style="background:#42A5F5">지원</span></div>
+              </div>
+              <div class="row">
+                <div><span class="co">당근</span> <span class="po">백엔드 개발자</span></div>
+                <div class="right"><span class="dd past">D+1</span><span class="stage" style="background:#29B6F6">서류합격</span></div>
+              </div>
+              <div class="row">
+                <div><span class="co">라인</span> <span class="po">서버 개발자</span></div>
+                <div class="right"><span class="dd plan">D-4</span><span class="stage" style="background:#9E9E9E">관심</span></div>
+              </div>
+              <div class="row">
+                <div><span class="co">배달의민족</span> <span class="po">안드로이드 개발자</span></div>
+                <div class="right"><span class="dd plan">D-3</span><span class="stage" style="background:#66BB6A">최종합격</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ════ 기획 ════ -->
+  <section class="section soft" id="why">
+    <div class="wrap">
+      <div class="thesis-lines">
+        <p class="on">지원 현황은 대부분 엑셀 시트로 관리됩니다.</p>
+        <p>그런데 시트는 마감이 다가온다고 알려주지 않습니다.</p>
+        <p class="on">그래서 잡모아는 <mark>마감과 합격률을 스스로 계산</mark>합니다.</p>
+      </div>
+
+      <dl class="facts">
+        <div><dt>7단계</dt><dd>관심 → 지원 → 서류합격 → 1·2차면접 → 처우협의 → 최종합격으로 이어지는 전형 파이프라인</dd></div>
+        <div><dt>62개</dt><dd>타이핑 없이 검색해서 담는 자격증 마스터 목록</dd></div>
+        <div><dt>64개</dt><dd>희망 직무 선택에 쓰는 직무 분류 목록</dd></div>
+        <div><dt>3일</dt><dd>이 안쪽으로 마감이 들어오면 D-day가 빨강으로 바뀌는 기준</dd></div>
+      </dl>
+
+      <h3 class="sub-head">잡모아가 해결하는 네 가지</h3>
+      <div class="problems">
+        <article class="problem">
+          <span class="tag">흩어진 기록의 통합</span>
+          <h4>시트, 메모, 메일함을 한 화면으로</h4>
+          <p>지원한 회사는 엑셀에, 자소서는 메모 앱에, 공고 링크는 메일함에 남습니다. 한 곳에서 지원 현황·자소서·자격증·일정을 함께 다루도록 화면을 다섯 개로 나눴습니다.</p>
+        </article>
+        <article class="problem">
+          <span class="tag">마감 관리의 자동화</span>
+          <h4>날짜를 읽지 않아도 보이는 마감</h4>
+          <p>시트에서는 마감일을 직접 읽고 날짜를 세야 합니다. 잡모아는 가장 임박한 일정까지 남은 일수를 계산해 D-day로 표시하고, 3일 이내면 빨강으로 바꿔 목록에서 먼저 눈에 들어오게 합니다.</p>
+        </article>
+        <article class="problem">
+          <span class="tag">진행 이력의 축적</span>
+          <h4>단계를 옮기면 기록이 남는 구조</h4>
+          <p>시트는 현재 상태만 덮어쓰기 때문에 언제 서류에 합격했는지가 남지 않습니다. 단계 이동 버튼을 누를 때마다 이력이 따로 쌓이고, 그 이력으로 서류·최종 합격률을 계산합니다.</p>
+        </article>
+        <article class="problem">
+          <span class="tag">입력 부담의 축소</span>
+          <h4>한 번 덜 누르고, 한 줄 덜 쓰게</h4>
+          <p>기록이 끊기는 이유는 입력이 번거롭기 때문입니다. 자격증은 검색해서 담고, 자소서는 버튼 한 번으로 복사하고, 공고 URL은 눌러서 원본으로 바로 넘어가게 했습니다.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- ════ 기능 ════ -->
+  <section class="section" id="features">
+    <div class="wrap">
+      <header class="sec-head">
+        <p class="eyebrow">Features</p>
+        <h2>지원 기록부터 자소서까지<br>다섯 가지 기능</h2>
+      </header>
+      <div class="features">
+        <a class="feature" href="#pipeline">
+          <h4>단계별 지원 추적</h4>
+          <p>7단계 파이프라인에서 단계를 옮기면 진행 이력이 자동으로 기록됩니다.</p>
+          <span class="go">자세히 →</span>
+        </a>
+        <a class="feature" href="#dday">
+          <h4>D-day 색 경고</h4>
+          <p>가장 임박한 일정까지 남은 일수를 계산해 색으로 구분해 보여줍니다.</p>
+          <span class="go">자세히 →</span>
+        </a>
+        <a class="feature" href="#ai">
+          <h4>AI 자소서 생성</h4>
+          <p>켜둔 항목만 프롬프트에 담아 Gemini가 자소서 초안을 씁니다.</p>
+          <span class="go">자세히 →</span>
+        </a>
+        <a class="feature" href="#input">
+          <h4>자격증 검색 담기</h4>
+          <p>62개 마스터 목록에서 검색해 고르면 보유 자격증으로 담깁니다.</p>
+          <span class="go">자세히 →</span>
+        </a>
+        <a class="feature" href="#record">
+          <h4>기록과 일정</h4>
+          <p>직무·고용형태 분포를 도넛으로, 마감과 면접을 월 달력으로 봅니다.</p>
+          <span class="go">자세히 →</span>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ════ 파이프라인 ════ -->
+  <section class="section band" id="pipeline">
+    <div class="wrap split">
+      <div>
+        <p class="eyebrow">Stage Pipeline</p>
+        <h2>단계를 옮기면<br>이력이 쌓입니다</h2>
+        <p class="lead">상세 패널의 <b>← 이전 단계</b> / <b>다음 단계 →</b> 버튼으로 전형을 옮깁니다. 옮길 때마다 단계와 시각이 별도 테이블에 기록되고, 그 이력으로 합격률이 계산됩니다. 단계를 눌러 확인해 보세요.</p>
+        <div class="pipe" role="group" aria-label="전형 단계 선택">
+          <button type="button" data-i="0" aria-pressed="false">관심</button>
+          <button type="button" data-i="1" aria-pressed="false">지원</button>
+          <button type="button" data-i="2" aria-pressed="false">서류합격</button>
+          <button type="button" data-i="3" aria-pressed="false">1차면접</button>
+          <button type="button" data-i="4" aria-pressed="true">2차면접</button>
+          <button type="button" data-i="5" aria-pressed="false">처우협의</button>
+          <button type="button" data-i="6" aria-pressed="false">최종합격</button>
+        </div>
+        <p class="pipe-hint">별도 단계: 불합격 · 중도포기 (진행 중 집계에서 빠집니다)</p>
+      </div>
+
+      <div class="logbox">
+        <div class="hd">
+          <span class="stage" id="pipeBadge" style="background:#8E24AA">2차면접</span>
+          <div><span class="co">토스</span><br><span class="po">프론트엔드 개발자</span></div>
+        </div>
+        <ul class="loglist" id="pipeLog"></ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- ════ D-day ════ -->
+  <section class="section" id="dday">
+    <div class="wrap split flip">
+      <div class="dday-demo">
+        <span class="num" style="font-size:12.5px;color:var(--fg-3)">2차 임원면접까지</span>
+        <div class="big" id="ddBig" style="color:var(--coral)">D-2</div>
+        <label for="ddRange" style="font-size:13px;color:var(--fg-2)">남은 일수를 움직여 보세요</label>
+        <input type="range" id="ddRange" min="-3" max="14" value="2" step="1">
+        <div class="scale"><span>D+3</span><span>D-DAY</span><span>D-14</span></div>
+        <p class="caption" id="ddCap"></p>
+        <ul class="legend-dd">
+          <li><span class="sw" style="background:#D64545"></span>마감 3일 이내</li>
+          <li><span class="sw" style="background:#7C5CFC"></span>그 외 예정</li>
+          <li><span class="sw" style="background:#9EA3B8"></span>지난 일정</li>
+        </ul>
+      </div>
+      <div>
+        <p class="eyebrow">D-day Signal</p>
+        <h2>급한 것이<br>먼저 눈에 들어오게</h2>
+        <p class="body">다음 일정(면접 등)을 먼저 보고, 없으면 서류 마감일을 기준으로 남은 일수를 계산합니다. 둘 다 없으면 D-day 칸은 비워 둡니다.</p>
+        <p class="body" style="margin-top:14px">색은 세 가지만 씁니다. 3일 이내는 빨강, 그 외 예정은 대표색, 지난 일정은 회색입니다. 색을 아껴 쓴 덕분에 빨강이 실제로 경고로 읽힙니다. 같은 기준으로 대시보드의 <b>마감 임박</b> 타일도 집계됩니다.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ════ AI ════ -->
+  <section class="section band" id="ai">
+    <div class="wrap">
+      <header class="sec-head">
+        <p class="eyebrow">Google Gemini 2.5 Flash</p>
+        <h2>켜둔 항목만<br><mark>프롬프트에 담깁니다</mark></h2>
+        <p class="lead">프로필 전체를 통째로 보내지 않습니다. 자격증·학력·대외활동·경력·희망직무 중에서 사용자가 켠 항목만 모아 프롬프트를 만들고, Gemini REST API를 직접 호출해 초안을 받습니다.</p>
+      </header>
+
+      <div class="ai-grid">
+        <div>
+          <p class="cap" style="font-family:var(--mono);font-size:11.5px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:var(--band-2);margin-bottom:10px">사용을 허락한 항목</p>
+          <div class="toggles" id="aiToggles">
+            <label class="toggle"><input type="checkbox" id="ai0" checked data-t="자격증: 정보처리기사 (한국산업인력공단)"><span class="tx"><span class="tt">정보처리기사</span><span class="ts">자격증 · 한국산업인력공단</span></span></label>
+            <label class="toggle"><input type="checkbox" id="ai1" checked data-t="자격증: SQLD (SQL 개발자)"><span class="tx"><span class="tt">SQLD</span><span class="ts">자격증 · 한국데이터산업진흥원</span></span></label>
+            <label class="toggle"><input type="checkbox" id="ai2" data-t="학력: 한국대학교 컴퓨터공학과 졸업"><span class="tx"><span class="tt">컴퓨터공학과 졸업</span><span class="ts">학력 · 한국대학교</span></span></label>
+            <label class="toggle"><input type="checkbox" id="ai3" checked data-t="경력: (주)테크스타트 백엔드 인턴 (2023.07~2023.12) — REST API 개발 보조"><span class="tx"><span class="tt">백엔드 인턴 6개월</span><span class="ts">경력 · (주)테크스타트</span></span></label>
+            <label class="toggle"><input type="checkbox" id="ai4" data-t="대외활동: 교내 개발 동아리 프로젝트 리드"><span class="tx"><span class="tt">개발 동아리 프로젝트 리드</span><span class="ts">대외활동</span></span></label>
+            <label class="toggle"><input type="checkbox" id="ai5" data-t="희망직무: 프론트엔드 개발자"><span class="tx"><span class="tt">프론트엔드 개발자</span><span class="ts">희망 직무</span></span></label>
+          </div>
+        </div>
+
+        <div class="promptbox">
+          <span class="cap">AiService.BuildPrompt()가 만드는 프롬프트</span>
+          <pre id="aiPrompt"></pre>
+          <div class="gen-row">
+            <button type="button" class="gen-btn" id="aiGen">🤖 AI 자소서 생성</button>
+            <span class="gen-note">생성 중에는 버튼 라벨이 <b>생성 중…</b>으로 바뀌고 다시 눌리지 않습니다</span>
+          </div>
+        </div>
+      </div>
+
+      <h3 class="sub-head">받아 온 초안</h3>
+      <div class="result" id="aiResult"></div>
+      <p class="gen-note" style="margin-top:10px">위 글은 이 페이지에 넣어 둔 예시 결과입니다. 실제 앱에서는 Gemini 응답이 그대로 자소서 본문에 채워집니다.</p>
+
+      <div class="fallback-note">
+        <div>
+          <b style="color:var(--band-fg)">키가 없으면 앱이 멈추는 대신 직접 씁니다.</b><br>
+          API 키가 비어 있거나 호출이 실패하면 <span class="codename">BuildDraft()</span>가 켜둔 항목을 문장 틀에 끼워 로컬에서 초안을 조립하고, 아래에 "자동 초안으로 작성되었습니다"라고 밝힙니다. 네트워크가 없는 발표장에서도 시연이 끊기지 않습니다.
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ════ 입력 ════ -->
+  <section class="section" id="input">
+    <div class="wrap split">
+      <div>
+        <p class="eyebrow">Low-friction Input</p>
+        <h2>타이핑하지 않고<br>검색해서 담기</h2>
+        <p class="body">자격증 이름을 정확히 적는 일은 생각보다 번거롭습니다. 위치 검색처럼, 검색창에 입력하면 62개 마스터 목록에서 후보가 걸러지고 <b>+ 담기</b>로 보유 자격증에 들어갑니다. 발급기관도 함께 들어가므로 따로 적을 일이 없습니다.</p>
+        <p class="body" style="margin-top:14px">같은 생각이 다른 화면에도 들어가 있습니다. 자소서는 <b>📋 복사하기</b>로 클립보드에 넣어 지원 사이트에 붙여넣고, 공고 URL을 저장해 두면 <b>🔗 지원 사이트 바로가기</b>로 원본 공고가 기본 브라우저에서 열립니다.</p>
+      </div>
+
+      <div class="search-demo">
+        <div class="search-field">
+          <span class="ic" aria-hidden="true">🔍</span>
+          <label for="certQ" class="num" style="position:absolute;left:-9999px">자격증 검색</label>
+          <input id="certQ" type="text" value="정보" autocomplete="off" placeholder="자격증 이름을 입력하세요">
+        </div>
+        <div class="hits" id="certHits"></div>
+        <div class="basket">
+          <span class="cap">담은 자격증</span>
+          <div class="chips" id="certBasket"><span class="none">아직 담은 자격증이 없습니다</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ════ 기록 ════ -->
+  <section class="section soft" id="record">
+    <div class="wrap">
+      <header class="sec-head">
+        <p class="eyebrow">Record &amp; Calendar</p>
+        <h2>지나온 지원을<br>한 번에 돌아보기</h2>
+        <p class="lead">기록 화면은 지원 이력·보유 자격증·작성한 자소서를 모아 보여주고, 직무별과 고용형태별 분포를 도넛으로 집계합니다. 차트 라이브러리를 쓰지 않고 좌표를 계산해 직접 그렸습니다.</p>
+      </header>
+
+      <div class="split" style="align-items:start">
+        <div class="card" style="padding:22px">
+          <h4 style="margin-bottom:4px">직무별 지원</h4>
+          <p style="font-size:13px;color:var(--fg-3);margin-bottom:16px">전체 6건 · 상위 6개 항목까지 표시하고 나머지는 '기타'로 묶습니다</p>
+          <div class="donut-wrap">
+            <svg viewBox="0 0 200 200" role="img" aria-label="직무별 지원 분포. 프론트엔드 개발자 2건 33%, 백엔드 개발자·데이터 엔지니어·서버 개발자·안드로이드 개발자 각 1건 17%.">
+              <path d="M 100.00 8.00 A 92 92 0 0 1 179.67 146.00 L 148.50 128.00 A 56 56 0 0 0 100.00 44.00 Z" fill="#7C5CFC"></path>
+              <path d="M 179.67 146.00 A 92 92 0 0 1 100.00 192.00 L 100.00 156.00 A 56 56 0 0 0 148.50 128.00 Z" fill="#2C9BD6"></path>
+              <path d="M 100.00 192.00 A 92 92 0 0 1 20.33 146.00 L 51.50 128.00 A 56 56 0 0 0 100.00 156.00 Z" fill="#2BB673"></path>
+              <path d="M 20.33 146.00 A 92 92 0 0 1 20.33 54.00 L 51.50 72.00 A 56 56 0 0 0 51.50 128.00 Z" fill="#F0922B"></path>
+              <path d="M 20.33 54.00 A 92 92 0 0 1 100.00 8.00 L 100.00 44.00 A 56 56 0 0 0 51.50 72.00 Z" fill="#E0524F"></path>
+            </svg>
+            <ul class="legend">
+              <li><span class="sw" style="background:#7C5CFC"></span>프론트엔드 개발자 <span class="pc">2건 · 33%</span></li>
+              <li><span class="sw" style="background:#2C9BD6"></span>백엔드 개발자 <span class="pc">1건 · 17%</span></li>
+              <li><span class="sw" style="background:#2BB673"></span>데이터 엔지니어 <span class="pc">1건 · 17%</span></li>
+              <li><span class="sw" style="background:#F0922B"></span>서버 개발자 <span class="pc">1건 · 17%</span></li>
+              <li><span class="sw" style="background:#E0524F"></span>안드로이드 개발자 <span class="pc">1건 · 17%</span></li>
+            </ul>
+          </div>
+        </div>
+
+        <div>
+          <div class="tiles" style="grid-template-columns:repeat(5,minmax(0,1fr));margin-bottom:12px">
+            <div class="tile"><span class="k">전체 지원</span><span class="v num">6</span></div>
+            <div class="tile"><span class="k">최종합격</span><span class="v num" style="color:var(--mint)">1</span></div>
+            <div class="tile"><span class="k">불합격</span><span class="v num">1</span></div>
+            <div class="tile"><span class="k">중도포기</span><span class="v num">0</span></div>
+            <div class="tile"><span class="k">최종 합격률</span><span class="v num sig">20%</span></div>
+          </div>
+
+          <div class="card" style="padding:20px">
+            <h4 style="margin-bottom:14px">단계별 합격 현황</h4>
+            <div class="funnel" style="--track:var(--line)">
+              <div class="step">
+                <div class="lab"><span>지원까지 도달</span><span class="n">5건 · 100%</span></div>
+                <div class="track" style="background:var(--line)"><div class="fill" style="width:100%"></div></div>
+              </div>
+              <div class="step">
+                <div class="lab"><span>서류합격까지 도달</span><span class="n">4건 · 80%</span></div>
+                <div class="track" style="background:var(--line)"><div class="fill" style="width:80%"></div></div>
+              </div>
+              <div class="step">
+                <div class="lab"><span>면접까지 도달</span><span class="n">2건 · 40%</span></div>
+                <div class="track" style="background:var(--line)"><div class="fill" style="width:40%"></div></div>
+              </div>
+              <div class="step">
+                <div class="lab"><span>최종합격</span><span class="n">1건 · 20%</span></div>
+                <div class="track" style="background:var(--line)"><div class="fill" style="width:20%;background:var(--mint)"></div></div>
+              </div>
+            </div>
+            <p style="font-size:12.5px;color:var(--fg-3);margin-top:12px">진행 이력 테이블에서 각 단계에 한 번이라도 도달한 건수를 세어 계산합니다</p>
+          </div>
+        </div>
+      </div>
+
+      <h3 class="sub-head">일정 — 마감과 면접을 한 달 안에서</h3>
+      <div class="split" style="align-items:center">
+        <div>
+          <p class="body">저장해 둔 서류 마감일과 다음 일정을 모아 월 달력에 올립니다. 마감은 보라, 면접은 민트로 구분하고, 날짜를 누르면 그 날의 일정만 아래에 나옵니다. 오늘 날짜는 테두리로 표시됩니다.</p>
+          <ul class="legend-dd" style="border:0;padding:0;margin-top:18px">
+            <li><span class="sw" style="background:#7C5CFC;border-radius:4px"></span>서류 마감</li>
+            <li><span class="sw" style="background:#1F9D57;border-radius:4px"></span>면접 · 다음 일정</li>
+          </ul>
+        </div>
+        <div class="cal">
+          <div class="cal-hd">
+            <span class="m">2026년 9월</span>
+            <span class="nav-b"><span aria-hidden="true">‹</span><span aria-hidden="true">›</span></span>
+          </div>
+          <div class="cal-grid">
+            <div class="wh">일</div><div class="wh">월</div><div class="wh">화</div><div class="wh">수</div><div class="wh">목</div><div class="wh">금</div><div class="wh">토</div>
+            <div class="cal-cell out">30</div>
+            <div class="cal-cell">31</div>
+            <div class="cal-cell">1</div>
+            <div class="cal-cell">2</div>
+            <div class="cal-cell">3</div>
+            <div class="cal-cell">4</div>
+            <div class="cal-cell">5</div>
+            <div class="cal-cell">6</div>
+            <div class="cal-cell">7</div>
+            <div class="cal-cell">8</div>
+            <div class="cal-cell">9</div>
+            <div class="cal-cell">10</div>
+            <div class="cal-cell">11</div>
+            <div class="cal-cell">12</div>
+            <div class="cal-cell today">13<span class="ev" style="background:#7C5CFC">당근 마감</span></div>
+            <div class="cal-cell">14<span class="ev" style="background:#7C5CFC">네이버 마감</span></div>
+            <div class="cal-cell">15<span class="ev" style="background:#1F9D57">토스 2차</span></div>
+            <div class="cal-cell">16<span class="ev" style="background:#1F9D57">배민 처우</span></div>
+            <div class="cal-cell">17<span class="ev" style="background:#7C5CFC">라인 마감</span></div>
+            <div class="cal-cell">18</div>
+            <div class="cal-cell">19</div>
+            <div class="cal-cell">20</div>
+            <div class="cal-cell">21</div>
+            <div class="cal-cell">22</div>
+            <div class="cal-cell">23</div>
+            <div class="cal-cell">24</div>
+            <div class="cal-cell">25</div>
+            <div class="cal-cell">26</div>
+            <div class="cal-cell">27</div>
+            <div class="cal-cell">28</div>
+            <div class="cal-cell">29</div>
+            <div class="cal-cell">30</div>
+            <div class="cal-cell out">1</div>
+            <div class="cal-cell out">2</div>
+            <div class="cal-cell out">3</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ════ 기술 ════ -->
+  <section class="section" id="tech">
+    <div class="wrap">
+      <header class="sec-head">
+        <p class="eyebrow">Stack</p>
+        <h2>외부 의존성은<br>딱 하나입니다</h2>
+        <p class="lead">NuGet 패키지는 <span class="codename">Microsoft.EntityFrameworkCore.Sqlite</span> 하나뿐입니다. 차트 라이브러리도, UI 키트도 쓰지 않고 WPF가 기본으로 주는 것만으로 화면을 만들었습니다.</p>
+      </header>
+
+      <div class="stack">
+        <div class="stack-card">
+          <span class="k">Presentation</span>
+          <h4>WPF · XAML</h4>
+          <p>.NET 8 (<span class="codename">net8.0-windows</span>) 데스크톱 앱. XAML 2,298줄로 화면 9개를 구성했습니다.</p>
+          <ul>
+            <li>App.xaml 447줄에 디자인 토큰을 모았습니다</li>
+            <li>Style 15종 · ControlTemplate 21종</li>
+            <li>Storyboard로 버튼 호버·포커스 전환</li>
+          </ul>
+        </div>
+        <div class="stack-card">
+          <span class="k">Architecture</span>
+          <h4>MVVM</h4>
+          <p>Models / ViewModels / Views를 나누고, 코드비하인드에는 <span class="codename">InitializeComponent</span>만 남겼습니다. C# 48개 파일 3,396줄.</p>
+          <ul>
+            <li>ViewModelBase가 INotifyPropertyChanged 구현</li>
+            <li>RelayCommand로 버튼을 ICommand에 연결</li>
+            <li>DataTemplate 7개로 ViewModel을 View에 매핑</li>
+          </ul>
+        </div>
+        <div class="stack-card">
+          <span class="k">Data</span>
+          <h4>EF Core 8 · SQLite</h4>
+          <p>코드 퍼스트로 테이블 5개를 만듭니다. 서버 설치 없이 실행 폴더에 <span class="codename">jobtracker.db</span> 파일 하나가 생깁니다.</p>
+          <ul>
+            <li>Applications · StageLogs · Users · CoverLetters · Certificates</li>
+            <li>1:N 관계 + Cascade 삭제</li>
+            <li>EnsureCreated 시점에 샘플 데이터 시드</li>
+          </ul>
+        </div>
+        <div class="stack-card">
+          <span class="k">Binding</span>
+          <h4>데이터 바인딩</h4>
+          <p>모든 화면이 <span class="codename">{Binding}</span> 기반입니다. 검색과 단계 필터는 CollectionView에 필터를 걸어 처리합니다.</p>
+          <ul>
+            <li>ObservableCollection으로 목록 자동 갱신</li>
+            <li>IValueConverter 8종 (단계 색 · D-day · Enum 설명)</li>
+            <li>Geometry를 직접 계산해 도넛 차트 렌더링</li>
+          </ul>
+        </div>
+        <div class="stack-card">
+          <span class="k">AI</span>
+          <h4>Gemini 2.5 Flash</h4>
+          <p>SDK 없이 <span class="codename">HttpClient</span> + <span class="codename">System.Text.Json</span>으로 REST API를 직접 호출합니다.</p>
+          <ul>
+            <li>역할·제약을 명시한 프롬프트 구성</li>
+            <li>async/await 호출 + 생성 중 버튼 잠금</li>
+            <li>실패 시 로컬 초안 조립으로 폴백</li>
+          </ul>
+        </div>
+        <div class="stack-card">
+          <span class="k">Shell</span>
+          <h4>사이드바 멀티뷰</h4>
+          <p>셸 하나가 <span class="codename">CurrentViewModel</span>을 바꾸면 그에 맞는 View가 자동으로 그려집니다.</p>
+          <ul>
+            <li>화면 전환에 네비게이션 프레임을 쓰지 않습니다</li>
+            <li>DataService 싱글톤을 모든 화면이 공유</li>
+            <li>로그인·회원가입 화면에서는 사이드바를 숨깁니다</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ════ 디자인 ════ -->
+  <section class="section soft" id="design">
+    <div class="wrap">
+      <header class="sec-head">
+        <p class="eyebrow">Design</p>
+        <h2>보라 하나와<br>신호색 세 개로</h2>
+        <p class="lead">색은 App.xaml 한 곳에 토큰으로 정의하고 모든 화면이 그것을 가져다 씁니다. 대표색 보라는 강조 면에만, 빨강·민트·주황은 상태 신호로만 씁니다.</p>
+      </header>
+
+      <div class="palette">
+        <div class="swatch"><div class="fill" style="background:#7C5CFC"></div><div class="meta"><span class="nm">Signature</span><span class="hx">#7C5CFC</span></div></div>
+        <div class="swatch"><div class="fill" style="background:linear-gradient(#8366FC,#6E4EF5)"></div><div class="meta"><span class="nm">Gradient</span><span class="hx">#8366FC→#6E4EF5</span></div></div>
+        <div class="swatch"><div class="fill" style="background:#16223A"></div><div class="meta"><span class="nm">Ink</span><span class="hx">#16223A</span></div></div>
+        <div class="swatch"><div class="fill" style="background:#F4F6FB"></div><div class="meta"><span class="nm">Background</span><span class="hx">#F4F6FB</span></div></div>
+        <div class="swatch"><div class="fill" style="background:#D64545"></div><div class="meta"><span class="nm">임박</span><span class="hx">#D64545</span></div></div>
+        <div class="swatch"><div class="fill" style="background:#1F9D57"></div><div class="meta"><span class="nm">합격</span><span class="hx">#1F9D57</span></div></div>
+        <div class="swatch"><div class="fill" style="background:#E08A2B"></div><div class="meta"><span class="nm">처우협의</span><span class="hx">#E08A2B</span></div></div>
+        <div class="swatch"><div class="fill" style="background:#9EA3B8"></div><div class="meta"><span class="nm">지난 일정</span><span class="hx">#9EA3B8</span></div></div>
+      </div>
+
+      <h3 class="sub-head">화면을 만들 때 지킨 규칙</h3>
+      <ul class="rules">
+        <li>
+          <span class="n">01</span>
+          <h4>이동 영역과 작업 영역을 가른다</h4>
+          <p>왼쪽 보라 사이드바가 이동, 밝은 본문이 작업입니다. 다섯 갈래로 나눠 지금 어디에 있는지 항상 보이게 했습니다.</p>
+        </li>
+        <li>
+          <span class="n">02</span>
+          <h4>색은 장식이 아니라 신호다</h4>
+          <p>대표색은 버튼·강조·로고에만 쓰고 나머지는 비웁니다. 그래서 빨강 D-day가 실제로 경고로 읽힙니다.</p>
+        </li>
+        <li>
+          <span class="n">03</span>
+          <h4>숫자는 그림으로 한 번 더</h4>
+          <p>합격률은 숫자와 막대로, 직무 분포는 도넛으로 같이 보여줍니다. 읽지 않아도 눈에 들어오게 하는 것이 목적입니다.</p>
+        </li>
+        <li>
+          <span class="n">04</span>
+          <h4>지금 상태를 계속 말해 준다</h4>
+          <p>생성 중에는 버튼이 잠기고, 저장·복사 후에는 확인 창이 뜹니다. 반응 없는 1초는 사용자에게 고장으로 느껴집니다.</p>
+        </li>
+        <li>
+          <span class="n">05</span>
+          <h4>규격을 먼저 정하고 화면을 만든다</h4>
+          <p>색·여백·모서리 둥글기·버튼 네 종류를 App.xaml에 먼저 정의했습니다. 새 화면을 만들어도 같은 앱으로 보입니다.</p>
+        </li>
+        <li>
+          <span class="n">06</span>
+          <h4>입력은 최대한 가볍게</h4>
+          <p>검색해서 담기, 복사해서 붙여넣기, 눌러서 원본 열기. 한 번 덜 누르게 만드는 것이 기능을 하나 더 넣는 것보다 낫습니다.</p>
+        </li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ════ 배운 점 ════ -->
+  <section class="section band" id="learn">
+    <div class="wrap">
+      <header class="sec-head">
+        <p class="eyebrow">Learned</p>
+        <h2>이 프로젝트에서<br>배운 것</h2>
+      </header>
+
+      <div class="learn">
+        <article>
+          <p class="q">정보를 줄이는 게 아니라 위계를 만드는 일</p>
+          <p>처음에는 필요한 정보를 한 화면에 모두 담으려 했고, 그 결과 무엇부터 봐야 할지 알 수 없는 화면이 됐습니다. 이동 영역과 작업 영역을 가르고 화면을 다섯 갈래로 나누자 길을 잃지 않게 됐습니다.</p>
+        </article>
+        <article>
+          <p class="q">색을 아껴 쓰면 경고색이 제 역할을 한다</p>
+          <p>대표색 하나를 정해 강조 면에만 쓰고 나머지 화면을 비웠습니다. 그 덕분에 마감 3일 이내에만 켜지는 빨강이 목록에서 가장 먼저 보입니다.</p>
+        </article>
+        <article>
+          <p class="q">숫자보다 그림이 사람을 움직인다</p>
+          <p>"지원 6건, 서류합격 4건"이라는 텍스트는 잘 읽히지 않았습니다. 같은 값을 도넛과 막대로 보여주자 자기 활동을 돌아보게 되는 화면이 됐습니다.</p>
+        </article>
+        <article>
+          <p class="q">자동화가 막히면 손을 덜 쓰게 만든다</p>
+          <p>채용 사이트 자동 연동이 불가능하다는 걸 확인한 뒤, 기능을 포기하는 대신 입력 자체를 가볍게 만드는 쪽으로 방향을 틀었습니다. 작은 마찰 하나가 실제 사용 여부를 가릅니다.</p>
+        </article>
+        <article>
+          <p class="q">화면은 지금 상태를 계속 말해야 한다</p>
+          <p>AI 생성처럼 시간이 걸리는 동작에서 아무 반응이 없으면 사용자는 고장으로 받아들입니다. 버튼 라벨을 바꾸고 다시 눌리지 않게 막는 것만으로 체감이 달라졌습니다.</p>
+        </article>
+        <article>
+          <p class="q">완성도는 감각보다 체계에서 나온다</p>
+          <p>색·여백·버튼 종류를 한 곳에 규격으로 정하고 모든 화면이 그것을 쓰게 하자, 새 화면을 만들어도 자연스럽게 같은 앱처럼 보이고 수정도 한 번에 반영됐습니다.</p>
+        </article>
+      </div>
+
+      <dl class="counts">
+        <div><dt class="num">5</dt><dd>사이드바로 오가는 화면</dd></div>
+        <div><dt class="num">9</dt><dd>XAML View 파일</dd></div>
+        <div><dt class="num">8</dt><dd>직접 만든 IValueConverter</dd></div>
+        <div><dt class="num">5</dt><dd>SQLite 테이블</dd></div>
+        <div><dt class="num">1</dt><dd>외부 NuGet 패키지</dd></div>
+      </dl>
+    </div>
+  </section>
+
+  <!-- ════ 향후 ════ -->
+  <section class="section" id="next">
+    <div class="wrap">
+      <header class="sec-head">
+        <p class="eyebrow">Next</p>
+        <h2>다음에 할 일</h2>
+      </header>
+      <ul class="plans">
+        <li><b>브라우저 확장 연동</b><span>공고 페이지에서 한 번에 담도록 확장 프로그램을 붙여 입력 부담을 더 줄입니다.</span></li>
+        <li><b>서버 DB 전환과 동기화</b><span>EF Core의 provider만 바꿔 MySQL 등으로 옮기고 여러 기기에서 같은 기록을 봅니다.</span></li>
+        <li><b>탈락 이력 기반 피드백</b><span>어느 단계에서 자주 막히는지 쌓인 이력으로 분석하고 문항별 첨삭까지 확장합니다.</span></li>
+        <li><b>알림과 주간 리포트</b><span>D-day 색 경고를 넘어 데스크톱 알림과 주간 요약으로 구직 활동이 끊기지 않게 합니다.</span></li>
+        <li><b>취업 데이터의 공적 활용</b><span>단계별 이탈 지점과 평균 소요 기간을 익명 통계로 모아 대학 취업지원센터·청년정책 자료로 쓰이게 합니다.</span></li>
+        <li><b>API 키 분리</b><span>소스에 박아 둔 키를 환경 변수·설정 파일로 옮기고 사용자가 직접 키를 넣을 수 있게 합니다.</span></li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ════ 한계 ════ -->
+  <section class="section soft">
+    <div class="wrap">
+      <div class="honest">
+        <p class="eyebrow">Honest</p>
+        <h3>"원본 사이트에서 지원하면 자동으로 옮겨지나요?"</h3>
+        <p class="body" style="margin-top:12px">아니요. 자동 연동은 구조적으로 불가능합니다.</p>
+        <ul>
+          <li>잡코리아·사람인·원티드는 "내가 어디에 지원했는지"를 외부에 열어주는 공개 API가 없습니다.</li>
+          <li>자동 수집에는 로그인 세션 탈취나 크롤링이 필요하고, 이는 약관 위반입니다.</li>
+          <li>해외 트래커인 Simplify·Teal도 수동 입력과 브라우저 확장을 조합합니다. 100% 자동은 없습니다.</li>
+        </ul>
+        <p class="out">그래서 잡모아의 가치는 자동 연동이 아니라, <mark>흩어진 것을 한 곳에 모으고 입력을 최대한 가볍게 만드는 것</mark>에 있습니다.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ════ 마지막 ════ -->
+  <section class="section final">
+    <div class="wrap">
+      <h2>흩어진 지원 현황을,<br>한 곳에 모아서</h2>
+      <p class="lead">Visual Studio 2022에서 <span class="codename">JobMore.csproj</span>를 열고 F5를 누르면 바로 실행됩니다. 따로 설치할 DB는 없습니다.</p>
+      <div class="cta-row">
+        <a class="btn sig" href="https://github.com/bong-bong00/JobMore" target="_blank" rel="noopener">GitHub 저장소</a>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap f-inner">
+    <span>잡모아 JobMore — 취업 지원 현황 관리 데스크톱 앱</span>
+    <span style="margin-left:auto"><a href="https://github.com/bong-bong00/JobMore" target="_blank" rel="noopener">github.com/bong-bong00/JobMore</a></span>
+  </div>
+</footer>
+
+<script>
+(function () {
+  "use strict";
+
+  /* ── 전형 단계 파이프라인 ── */
+  var STAGES = [
+    { n: "관심",     c: "#9E9E9E" },
+    { n: "지원",     c: "#42A5F5" },
+    { n: "서류합격", c: "#29B6F6" },
+    { n: "1차면접",  c: "#AB47BC" },
+    { n: "2차면접",  c: "#8E24AA" },
+    { n: "처우협의", c: "#FFA726" },
+    { n: "최종합격", c: "#66BB6A" }
+  ];
+  var WHEN = ["—", "18일 전", "14일 전", "7일 전", "1일 전", "오늘", "오늘"];
+  var pipeLog = document.getElementById("pipeLog");
+  var pipeBadge = document.getElementById("pipeBadge");
+  var pipeBtns = Array.prototype.slice.call(document.querySelectorAll(".pipe button"));
+
+  function renderPipe(idx) {
+    pipeBadge.textContent = STAGES[idx].n;
+    pipeBadge.style.background = STAGES[idx].c;
+    var html = "";
+    for (var i = 0; i <= idx; i++) {
+      html += '<li class="done"><span class="pip"></span><span>' + STAGES[i].n +
+              '</span><span class="when">' + (i === 0 ? "관심 등록" : WHEN[i]) + "</span></li>";
+    }
+    for (var j = idx + 1; j < STAGES.length; j++) {
+      html += '<li><span class="pip"></span><span>' + STAGES[j].n + "</span><span class=\"when\">—</span></li>";
+    }
+    pipeLog.innerHTML = html;
+    pipeBtns.forEach(function (b) {
+      b.setAttribute("aria-pressed", Number(b.dataset.i) === idx ? "true" : "false");
+    });
+  }
+  pipeBtns.forEach(function (b) {
+    b.addEventListener("click", function () { renderPipe(Number(b.dataset.i)); });
+  });
+  renderPipe(4);
+
+  /* ── D-day 색 규칙 (DdayToBrushConverter와 동일) ── */
+  var ddRange = document.getElementById("ddRange");
+  var ddBig = document.getElementById("ddBig");
+  var ddCap = document.getElementById("ddCap");
+
+  function renderDday() {
+    var d = Number(ddRange.value);
+    var text = d === 0 ? "D-DAY" : (d > 0 ? "D-" + d : "D+" + -d);
+    var color, cap;
+    if (d < 0) {
+      color = "#9EA3B8";
+      cap = "지난 일정입니다. 회색으로 물러나 진행 중인 지원을 가리지 않습니다.";
+    } else if (d <= 3) {
+      color = "#D64545";
+      cap = "마감 3일 이내입니다. 빨강으로 바뀌고 대시보드의 '마감 임박' 타일에도 함께 집계됩니다.";
+    } else {
+      color = "#7C5CFC";
+      cap = "예정된 일정입니다. 대표색으로 표시하고 따로 경고하지 않습니다.";
+    }
+    ddBig.textContent = text;
+    ddBig.style.color = color;
+    ddCap.textContent = cap;
+  }
+  ddRange.addEventListener("input", renderDday);
+  renderDday();
+
+  /* ── AI 프롬프트 구성 (AiService.BuildPrompt와 동일한 뼈대) ── */
+  var aiBoxes = Array.prototype.slice.call(document.querySelectorAll("#aiToggles input"));
+  var aiPrompt = document.getElementById("aiPrompt");
+  var aiGen = document.getElementById("aiGen");
+  var aiResult = document.getElementById("aiResult");
+
+  var HEAD =
+    "당신은 한국 취업 자기소개서 작성을 돕는 전문가입니다.\n" +
+    "아래 지원자 정보를 자연스럽게 녹여, 진솔하고 구체적인 자기소개서 한 편을 한국어로 작성하세요.\n" +
+    "과장 없이, 700자 내외로, 문단을 나눠서 작성하세요.\n\n" +
+    "[문항] 지원 직무를 위해 어떤 준비를 해왔는지 기술해 주세요.\n" +
+    "[지원자가 사용을 허락한 항목]\n";
+
+  function picked() {
+    return aiBoxes.filter(function (b) { return b.checked; }).map(function (b) { return b.dataset.t; });
+  }
+  function renderPrompt() {
+    var items = picked();
+    var body = items.length
+      ? items.map(function (t) { return "- " + t; }).join("\n")
+      : "- (선택된 항목 없음 — 일반적인 강점 위주로 작성)";
+    aiPrompt.textContent = HEAD + body;
+  }
+  aiBoxes.forEach(function (b) {
+    b.addEventListener("change", function () {
+      renderPrompt();
+      aiGen.disabled = false;
+      aiGen.textContent = "🤖 AI 자소서 생성";
+    });
+  });
+  renderPrompt();
+
+  var DRAFT =
+    "저는 사용자가 겪는 작은 불편을 끝까지 따라가 해결하는 것을 즐기는 지원자입니다. " +
+    "정보처리기사와 SQLD를 준비하며 데이터가 저장되고 읽히는 과정을 구조로 이해하게 되었고, " +
+    "이 기준은 화면을 설계할 때도 그대로 적용되었습니다.\n\n" +
+    "테크스타트에서 백엔드 인턴으로 6개월간 REST API 개발을 보조하면서, " +
+    "요청 하나가 응답으로 돌아오기까지 어디에서 시간이 걸리는지를 직접 측정해 보았습니다. " +
+    "그 경험 덕분에 기능을 추가하기 전에 지금 느려지는 지점이 어디인지를 먼저 확인하는 습관이 생겼습니다.\n\n" +
+    "입사 후에도 눈에 보이는 기능보다 사용자가 한 번 덜 누르게 만드는 일에 집중하며, " +
+    "맡은 일의 결과를 숫자로 설명할 수 있는 개발자가 되겠습니다.";
+
+  var PLACEHOLDER = "생성 버튼을 누르면 Gemini가 쓴 초안이 이 자리에 채워집니다.";
+  aiResult.innerHTML = '<span class="ph">' + PLACEHOLDER + "</span>";
+
+  var timer = null;
+  aiGen.addEventListener("click", function () {
+    if (timer) { return; }
+    aiGen.disabled = true;
+    aiGen.textContent = "생성 중…";
+    aiResult.innerHTML = '<span class="ph">프롬프트를 보내고 응답을 기다리는 중…</span>';
+    timer = window.setTimeout(function () {
+      timer = null;
+      aiGen.textContent = "🤖 다시 생성";
+      aiGen.disabled = false;
+      aiResult.textContent = DRAFT;
+    }, 1100);
+  });
+
+  /* ── 자격증 검색 담기 (CertificateCatalog 전체 62개) ── */
+  var CERTS = [
+    ["정보처리기사", "한국산업인력공단"], ["정보처리산업기사", "한국산업인력공단"],
+    ["정보처리기능사", "한국산업인력공단"], ["SQLD (SQL 개발자)", "한국데이터산업진흥원"],
+    ["SQLP (SQL 전문가)", "한국데이터산업진흥원"], ["ADsP (데이터분석 준전문가)", "한국데이터산업진흥원"],
+    ["ADP (데이터분석 전문가)", "한국데이터산업진흥원"], ["빅데이터분석기사", "한국데이터산업진흥원"],
+    ["리눅스마스터 1급", "한국정보통신진흥협회"], ["리눅스마스터 2급", "한국정보통신진흥협회"],
+    ["네트워크관리사 2급", "한국정보통신자격협회"], ["정보보안기사", "한국방송통신전파진흥원"],
+    ["전자계산기조직응용기사", "한국산업인력공단"], ["컴퓨터활용능력 1급", "대한상공회의소"],
+    ["컴퓨터활용능력 2급", "대한상공회의소"], ["워드프로세서", "대한상공회의소"],
+    ["ITQ", "한국생산성본부"], ["GTQ (그래픽기술자격)", "한국생산성본부"],
+    ["TOEIC", "ETS / YBM"], ["TOEIC Speaking", "ETS / YBM"], ["OPIc", "ACTFL / 크레듀"],
+    ["TOEFL", "ETS"], ["TEPS", "서울대학교"], ["JLPT (일본어능력시험)", "일본국제교류기금"],
+    ["JPT (일본어)", "YBM"], ["HSK (중국어)", "중국 교육부"], ["DELE (스페인어)", "스페인 교육부"],
+    ["컴퓨터활용능력 (사무)", "대한상공회의소"], ["전산회계 1급", "한국세무사회"],
+    ["전산회계 2급", "한국세무사회"], ["전산세무 1급", "한국세무사회"], ["전산세무 2급", "한국세무사회"],
+    ["재경관리사", "삼일회계법인"], ["ERP정보관리사 회계", "한국생산성본부"],
+    ["ERP정보관리사 인사", "한국생산성본부"], ["KBS한국어능력시험", "KBS"],
+    ["한국사능력검정시험 1급", "국사편찬위원회"], ["한국사능력검정시험 2급", "국사편찬위원회"],
+    ["매경TEST", "매일경제"], ["TESAT", "한국경제신문"], ["투자자산운용사", "금융투자협회"],
+    ["펀드투자권유대행인", "금융투자협회"], ["증권투자권유대행인", "금융투자협회"],
+    ["파생상품투자권유대행인", "금융투자협회"], ["신용분석사", "한국금융연수원"],
+    ["AFPK (재무설계사)", "한국FPSB"], ["CFP (국제공인재무설계사)", "한국FPSB"],
+    ["사회조사분석사 2급", "한국산업인력공단"], ["직업상담사 2급", "한국산업인력공단"],
+    ["산업안전기사", "한국산업인력공단"], ["위험물산업기사", "한국산업인력공단"],
+    ["전기기사", "한국산업인력공단"], ["전기산업기사", "한국산업인력공단"],
+    ["물류관리사", "한국산업인력공단"], ["유통관리사 2급", "대한상공회의소"],
+    ["국제무역사", "한국무역협회"], ["운전면허 1종보통", "도로교통공단"],
+    ["운전면허 2종보통", "도로교통공단"], ["한식조리기능사", "한국산업인력공단"],
+    ["바리스타 2급", "민간자격"], ["사회복지사 1급", "한국사회복지사협회"],
+    ["사회복지사 2급", "한국사회복지사협회"]
+  ];
+
+  var certQ = document.getElementById("certQ");
+  var certHits = document.getElementById("certHits");
+  var certBasket = document.getElementById("certBasket");
+  var basket = [];
+
+  function renderBasket() {
+    if (!basket.length) {
+      certBasket.innerHTML = '<span class="none">아직 담은 자격증이 없습니다</span>';
+      return;
+    }
+    certBasket.innerHTML = basket.map(function (n) {
+      return '<span class="chip">' + n + "</span>";
+    }).join("");
+  }
+
+  function renderHits() {
+    var q = certQ.value.trim();
+    var hits = q
+      ? CERTS.filter(function (c) {
+          return c[0].toLowerCase().indexOf(q.toLowerCase()) !== -1 ||
+                 c[1].toLowerCase().indexOf(q.toLowerCase()) !== -1;
+        }).slice(0, 8)
+      : CERTS.slice(0, 8);
+    if (!hits.length) {
+      certHits.innerHTML = '<p class="empty">"' + q + '"에 해당하는 자격증이 없습니다.</p>';
+      return;
+    }
+    certHits.innerHTML = hits.map(function (c) {
+      var added = basket.indexOf(c[0]) !== -1;
+      return '<div class="hit' + (added ? " added" : "") + '">' +
+        '<span class="nm">' + c[0] + ' <span class="is">' + c[1] + "</span></span>" +
+        '<button type="button" data-n="' + c[0] + '">' + (added ? "담김" : "+ 담기") + "</button></div>";
+    }).join("");
+  }
+
+  certHits.addEventListener("click", function (e) {
+    var b = e.target.closest("button[data-n]");
+    if (!b) { return; }
+    var n = b.dataset.n;
+    if (basket.indexOf(n) === -1) { basket.push(n); }
+    renderBasket();
+    renderHits();
+  });
+  certQ.addEventListener("input", renderHits);
+  renderHits();
+  renderBasket();
+})();
+</script>
