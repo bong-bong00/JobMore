@@ -97,13 +97,6 @@ h4 { font-size: 18px; font-weight: 700; line-height: 1.5; letter-spacing: -.025e
 .hl { color: var(--sig); }
 .band .hl { color: #C6B5FF; }
 
-/* 섹션 머리표 — 앱의 단계 배지 모양 */
-.pill {
-  display: inline-block; font-size: 13px; font-weight: 700; letter-spacing: -.01em;
-  background: var(--sig-soft); color: var(--sig-deep);
-  border-radius: 999px; padding: 5px 13px; margin-bottom: 16px;
-}
-.band .pill { background: rgba(255, 255, 255, .13); color: #D9CEFF; }
 .lead { color: var(--fg-2); font-size: 17.5px; max-width: 31em; }
 .band .lead, .band .body { color: var(--band-2); }
 .body { color: var(--fg-2); max-width: 33em; }
@@ -405,6 +398,28 @@ h4 { font-size: 18px; font-weight: 700; line-height: 1.5; letter-spacing: -.025e
 .final .lead { margin-inline: auto; }
 .final .cta { justify-content: center; }
 
+/* ── 스크롤 연출 — 아래에서 떠오르기 · 숫자 카운트업 · 막대와 도넛 그리기 ── */
+@media (prefers-reduced-motion: no-preference) {
+  .rise {
+    transition: opacity var(--dur, 1s) cubic-bezier(.22, .61, .36, 1) var(--d, 0ms),
+                translate var(--dur, 1s) cubic-bezier(.22, .61, .36, 1) var(--d, 0ms);
+  }
+  .rise.pre { opacity: 0; translate: 0 var(--rise, 40px); transition: none; }
+  .win.rise { --dur: 1.25s; --rise: 56px; }
+  .feat.rise { --dur: .8s; --rise: 28px; }
+  .sw.rise, .meta li.rise { --dur: .8s; --rise: 24px; }
+  .donut svg { transition: opacity .9s ease var(--d, 0ms), rotate 1.4s cubic-bezier(.22, .61, .36, 1) var(--d, 0ms); }
+  .donut.pre svg { opacity: 0; rotate: -45deg; transition: none; }
+  .donut li { transition: opacity .7s ease calc(var(--i, 0) * 110ms + 260ms), translate .7s cubic-bezier(.22, .61, .36, 1) calc(var(--i, 0) * 110ms + 260ms); }
+  .donut.pre li { opacity: 0; translate: 14px 0; transition: none; }
+  .funnel .fi { transition: width 1.2s cubic-bezier(.22, .61, .36, 1) calc(var(--i, 0) * 160ms); }
+  .funnel.pre .fi { width: 0 !important; transition: none; }
+  .track button { transition: opacity .6s ease calc(var(--i, 0) * 70ms), translate .6s cubic-bezier(.22, .61, .36, 1) calc(var(--i, 0) * 70ms), border-color .15s ease, color .15s ease, background .15s ease; }
+  .track.pre button { opacity: 0; translate: 0 14px; transition: none; }
+  .track.pre .ar { opacity: 0; }
+  .track .ar { transition: opacity .6s ease .3s; }
+}
+
 footer { border-top: 1px solid var(--line); padding-block: 30px; font-size: 13.5px; color: var(--fg-3); }
 footer .fi { display: flex; flex-wrap: wrap; gap: 10px 20px; align-items: center; }
 footer a { font-weight: 700; color: var(--fg-2); }
@@ -415,10 +430,8 @@ footer a:hover { color: var(--sig); }
   <div class="wrap nav-in">
     <a class="brand" href="#top"><img src="img/logo.png" alt="" width="30" height="30">잡모아</a>
     <nav class="nav-links" aria-label="페이지 목차">
-      <a href="#why">기획</a>
+      <a href="#why">소개</a>
       <a href="#features">기능</a>
-      <a href="#stage">단계 기록</a>
-      <a href="#ai">AI 자소서</a>
       <a href="#design">디자인</a>
     </nav>
     <a class="btn" href="https://github.com/bong-bong00/JobMore" target="_blank" rel="noopener">GitHub</a>
@@ -431,9 +444,8 @@ footer a:hover { color: var(--sig); }
   <section class="sec" style="padding-bottom:clamp(26px,3vw,44px)">
     <div class="wrap">
       <div class="hero-copy">
-        <span class="pill">취업 지원 관리 데스크톱 앱</span>
         <h1>흩어진 지원 현황을<br>한 곳에 <span class="hl">모아서</span>,<br>합격은 <span class="hl">더 (More)</span></h1>
-        <p class="lead" style="margin-top:20px">마감·면접 D-day를 색으로 경고하고, 단계별 합격률까지 자동 집계하는 취업 트래커. 자소서는 켜둔 항목만으로 AI가 초안을 씁니다.</p>
+        <p class="lead" style="margin-top:20px">마감·면접 D-day를 색으로 경고하고 단계별 합격률까지 자동 집계하는 <b>취업 지원 관리 데스크톱 앱</b>. 자소서는 켜둔 항목만으로 AI가 초안을 씁니다.</p>
         <div class="cta">
           <a class="btn sig" href="https://github.com/bong-bong00/JobMore" target="_blank" rel="noopener">GitHub 저장소</a>
           <a class="btn ghost" href="#features">기능 보기</a>
@@ -451,10 +463,10 @@ footer a:hover { color: var(--sig); }
           <div class="pane">
             <div class="ttl">지원현황</div>
             <div class="tiles">
-              <div class="tile"><span>이번 주 마감</span><b style="color:#7C5CFC">3</b></div>
-              <div class="tile"><span>마감 임박 (3일내)</span><b style="color:#D74949">1</b></div>
-              <div class="tile"><span>면접 진행</span><b>2</b></div>
-              <div class="tile"><span>서류 합격률</span><b>67%</b></div>
+              <div class="tile"><span>이번 주 마감</span><b class="count" style="color:#7C5CFC">3</b></div>
+              <div class="tile"><span>마감 임박 (3일내)</span><b class="count" style="color:#D74949">1</b></div>
+              <div class="tile"><span>면접 진행</span><b class="count">2</b></div>
+              <div class="tile"><span>서류 합격률</span><b class="count">67%</b></div>
             </div>
             <div class="dbar">
               <div class="lg2">D-day 색:
@@ -578,10 +590,10 @@ footer a:hover { color: var(--sig); }
 
       <h3 class="sub-head">숫자로 보면</h3>
       <dl class="facts">
-        <div><dt>7단계</dt><dd>관심 → 지원 → 서류합격 → 1·2차면접 → 처우협의 → 최종합격 전형 파이프라인</dd></div>
-        <div><dt>62개</dt><dd>타이핑 없이 검색해서 담는 자격증 마스터 목록</dd></div>
-        <div><dt>3일</dt><dd>이 안쪽으로 마감이 들어오면 D-day가 빨강으로 바뀌는 기준</dd></div>
-        <div><dt>1개</dt><dd>외부 NuGet 패키지. 차트도 UI 키트도 쓰지 않았습니다</dd></div>
+        <div><dt class="count">7단계</dt><dd>관심 → 지원 → 서류합격 → 1·2차면접 → 처우협의 → 최종합격 전형 파이프라인</dd></div>
+        <div><dt class="count">62개</dt><dd>타이핑 없이 검색해서 담는 자격증 마스터 목록</dd></div>
+        <div><dt class="count">3일</dt><dd>이 안쪽으로 마감이 들어오면 D-day가 빨강으로 바뀌는 기준</dd></div>
+        <div><dt class="count">1개</dt><dd>외부 NuGet 패키지. 차트도 UI 키트도 쓰지 않았습니다</dd></div>
       </dl>
     </div>
   </section>
@@ -590,8 +602,8 @@ footer a:hover { color: var(--sig); }
   <section class="sec" id="features">
     <div class="wrap">
       <header class="sec-head">
-        <span class="pill">기능</span>
         <h2>지원 기록부터 자소서까지<br>다섯 가지</h2>
+        <p class="lead" style="margin-top:16px">아래 다섯 섹션에서 화면과 함께 하나씩 보여드립니다.</p>
       </header>
       <div class="feats">
         <a class="feat" href="#stage"><h4>단계별 지원 추적</h4><p>7단계 파이프라인에서 단계를 옮기면 진행 이력이 자동으로 기록됩니다.</p><span class="go">자세히 →</span></a>
@@ -607,7 +619,6 @@ footer a:hover { color: var(--sig); }
   <section class="sec band" id="stage">
     <div class="wrap">
       <header class="sec-head">
-        <span class="pill">단계별 지원 추적</span>
         <h2>단계를 옮기면<br>날짜 이력이 쌓입니다</h2>
         <p class="lead">시트에서는 "서류합격"을 적는 순간 "지원"이 사라집니다. 잡모아는 상세 패널의 이동 버튼으로 전형을 옮기고, 옮길 때마다 단계와 날짜를 따로 남깁니다. 눌러 보세요.</p>
       </header>
@@ -661,7 +672,6 @@ footer a:hover { color: var(--sig); }
   <section class="sec" id="dday">
     <div class="wrap">
       <header class="sec-head">
-        <span class="pill">D-day 색 경고</span>
         <h2>오늘 뭘 해야 하는지<br>바로 보여줍니다</h2>
         <p class="lead">다음 일정(면접 등)을 먼저 보고, 없으면 서류 마감일을 기준으로 남은 일수를 계산합니다. 슬라이더를 움직이면 목록의 토스 행이 실제로 바뀝니다.</p>
       </header>
@@ -688,7 +698,7 @@ footer a:hover { color: var(--sig); }
           <div class="win-body"><div class="pane">
             <div class="tiles two">
               <div class="tile"><span>마감 임박 (3일내)</span><b id="ddCount" style="color:#D74949">1</b></div>
-              <div class="tile"><span>면접 진행</span><b>2</b></div>
+              <div class="tile"><span>면접 진행</span><b class="count">2</b></div>
             </div>
             <div class="dbar">
               <div class="lg2">D-day 색:
@@ -727,7 +737,6 @@ footer a:hover { color: var(--sig); }
   <section class="sec soft" id="calendar">
     <div class="wrap">
       <header class="sec-head">
-        <span class="pill">월 달력 일정</span>
         <h2>겹치는 주를<br>미리 알아챕니다</h2>
         <p class="lead">여러 회사의 마감과 면접을 월 단위 한 장에 모읍니다. 마감은 보라, 면접은 초록으로 구분하고 오늘은 테두리로 표시합니다.</p>
       </header>
@@ -785,7 +794,6 @@ footer a:hover { color: var(--sig); }
   <section class="sec" id="record">
     <div class="wrap">
       <header class="sec-head">
-        <span class="pill">기록과 합격률</span>
         <h2>지나온 지원을<br>한 번에 돌아보기</h2>
         <p class="lead">차트 라이브러리를 쓰지 않고 각도와 좌표를 직접 계산해 도넛을 그렸습니다. 합격률은 진행 이력에서 각 단계에 한 번이라도 도달한 건수를 세어 계산합니다.</p>
       </header>
@@ -801,11 +809,11 @@ footer a:hover { color: var(--sig); }
           <div class="pane">
             <div class="ttl">기록</div>
             <div class="tiles five">
-              <div class="tile"><span>전체 지원</span><b>6</b></div>
-              <div class="tile"><span>최종합격</span><b style="color:#27A05D">1</b></div>
-              <div class="tile"><span>불합격</span><b>1</b></div>
-              <div class="tile"><span>중도포기</span><b>0</b></div>
-              <div class="tile"><span>최종 합격률</span><b style="color:#7C5CFC">17%</b></div>
+              <div class="tile"><span>전체 지원</span><b class="count">6</b></div>
+              <div class="tile"><span>최종합격</span><b class="count" style="color:#27A05D">1</b></div>
+              <div class="tile"><span>불합격</span><b class="count">1</b></div>
+              <div class="tile"><span>중도포기</span><b class="count">0</b></div>
+              <div class="tile"><span>최종 합격률</span><b class="count" style="color:#7C5CFC">17%</b></div>
             </div>
             <div class="panels" style="grid-template-columns:repeat(2,minmax(0,1fr));margin-top:10px">
               <div class="card">
@@ -830,10 +838,10 @@ footer a:hover { color: var(--sig); }
               <div class="card">
                 <div class="h">단계별 합격 현황</div>
                 <div class="funnel">
-                  <div><div class="l"><span>지원까지 도달</span><em>6 · 100%</em></div><div class="tr"><div class="fi" style="width:100%"></div></div></div>
-                  <div><div class="l"><span>서류합격까지</span><em>4 · 67%</em></div><div class="tr"><div class="fi" style="width:67%"></div></div></div>
-                  <div><div class="l"><span>면접까지</span><em>2 · 33%</em></div><div class="tr"><div class="fi" style="width:33%"></div></div></div>
-                  <div><div class="l"><span>최종합격</span><em>1 · 17%</em></div><div class="tr"><div class="fi" style="width:17%;background:#27A05D"></div></div></div>
+                  <div><div class="l"><span>지원까지 도달</span><em class="count">6 · 100%</em></div><div class="tr"><div class="fi" style="width:100%"></div></div></div>
+                  <div><div class="l"><span>서류합격까지</span><em class="count">4 · 67%</em></div><div class="tr"><div class="fi" style="width:67%"></div></div></div>
+                  <div><div class="l"><span>면접까지</span><em class="count">2 · 33%</em></div><div class="tr"><div class="fi" style="width:33%"></div></div></div>
+                  <div><div class="l"><span>최종합격</span><em class="count">1 · 17%</em></div><div class="tr"><div class="fi" style="width:17%;background:#27A05D"></div></div></div>
                 </div>
                 <div class="f">항목이 많으면 상위 6개만 남기고 나머지는 '기타'로 묶습니다</div>
               </div>
@@ -848,7 +856,6 @@ footer a:hover { color: var(--sig); }
   <section class="sec band" id="ai">
     <div class="wrap">
       <header class="sec-head">
-        <span class="pill">AI 자소서 생성 · Google Gemini 2.5 Flash</span>
         <h2>반영할 스펙을<br>토글로 고릅니다</h2>
         <p class="lead">프로필 전체를 통째로 보내지 않습니다. 자격증·학력·대외활동·경력·희망직무 중 켠 항목만 모아 프롬프트를 만들고, SDK 없이 REST API를 직접 호출합니다.</p>
       </header>
@@ -922,7 +929,6 @@ footer a:hover { color: var(--sig); }
   <section class="sec" id="input">
     <div class="wrap">
       <header class="sec-head">
-        <span class="pill">자격증 · 자소서 입력</span>
         <h2>표기 흔들림과 오타를<br>목록에서 막습니다</h2>
         <p class="lead">자격증과 희망직무는 직접 타이핑하지 않고 목록에서 검색해 담습니다. 채용 사이트 자동 연동이 불가능한 만큼, 입력 자체를 가볍게 만드는 쪽으로 방향을 틀었습니다.</p>
       </header>
@@ -954,7 +960,6 @@ footer a:hover { color: var(--sig); }
   <section class="sec soft" id="design">
     <div class="wrap">
       <header class="sec-head">
-        <span class="pill">디자인</span>
         <h2>보라 하나와<br>신호색 세 개로</h2>
         <p class="lead">색은 App.xaml 한 곳에 토큰으로 정의하고 모든 화면이 그것을 가져다 씁니다. 대표색 보라는 강조 면에만, 빨강·초록·회색은 상태 신호로만 씁니다.</p>
       </header>
@@ -1134,6 +1139,119 @@ footer a:hover { color: var(--sig); }
       outBox.textContent = DRAFT;
     }, 1100);
   });
+
+  /* ── 스크롤 연출 ──
+     아래로 내려오며 들어올 때만 재생한다. 처음 화면에 이미 보이는 요소는 손대지 않으므로
+     페이지를 열자마자 읽을 내용은 전부 보인다. */
+  var REDUCE = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  var HAS_IO = "IntersectionObserver" in window;
+
+  function playFromBelow(el, onEnter, onReset, at) {
+    at = at || 0.72;
+    var armed = el.getBoundingClientRect().top > window.innerHeight * at;
+    if (armed) { onReset(); }
+    new IntersectionObserver(function (es) {
+      if (es[0].isIntersecting && armed) { armed = false; onEnter(); }
+    }, { rootMargin: "0px 0px -" + Math.round((1 - at) * 100) + "% 0px" }).observe(el);
+    new IntersectionObserver(function (es) {
+      var e = es[0];
+      if (!e.isIntersecting && e.boundingClientRect.top > 0 && !armed) { armed = true; onReset(); }
+    }).observe(el);
+  }
+
+  var watched = [];   /* 목차로 한 번에 건너뛰어도 숨은 채로 남지 않도록 쓸어 담는다 */
+
+  function watch(el, show, hide, at) {
+    watched.push({ el: el, show: show });
+    playFromBelow(el, show, hide, at);
+  }
+
+  if (!HAS_IO || REDUCE) {
+    /* 연출 없이 그대로 둔다 */
+  } else {
+    /* 1) 아래에서 떠오르기 — 형제 순서대로 조금씩 늦게 */
+    var SEL = ".sec-head, .facts > div, .feat, .vs > div, .win, .meta li, .ddctl, " +
+              ".legend, .finder, .rules > div, .sw, .steps .step, .aigrid, .out, .final .wrap > *";
+    var nodes = Array.prototype.filter.call(document.querySelectorAll(SEL), function (el) {
+      return !el.parentNode.closest(SEL);   /* 겹쳐서 두 번 움직이지 않게 */
+    });
+    nodes.forEach(function (el) {
+      var sibs = Array.prototype.filter.call(el.parentNode.children, function (c) {
+        return nodes.indexOf(c) !== -1;
+      });
+      var gap = el.matches(".feat, .sw, .meta li") ? 90 : 150;
+      el.style.setProperty("--d", (sibs.indexOf(el) % 6) * gap + "ms");
+      el.classList.add("rise");
+      watch(el,
+        function () { el.classList.remove("pre"); },
+        function () { el.classList.add("pre"); },
+        el.matches(".win") ? 0.88 : 0.72);
+    });
+
+    /* 2) 숫자 올라가기 — 1에서 최종 값까지 */
+    var NUM = /\d[\d,]*/g;
+    document.querySelectorAll(".count").forEach(function (el) {
+      var tpl = el.textContent;
+      var goals = (tpl.match(NUM) || []).map(function (n) { return Number(n.replace(/,/g, "")); });
+      if (!goals.length) { return; }
+      var run = 0;
+      function show(k) {
+        var i = 0;
+        el.textContent = tpl.replace(NUM, function () {
+          return Math.round(1 + (goals[i++] - 1) * k).toLocaleString("ko-KR");
+        });
+      }
+      playFromBelow(el, function () {
+        var id = ++run, t0 = performance.now();
+        (function tick(now) {
+          if (id !== run) { return; }
+          var k = Math.min(1, (now - t0) / 1500);
+          show(1 - Math.pow(1 - k, 3));
+          if (k < 1) { requestAnimationFrame(tick); }
+        })(t0);
+      }, function () { run++; show(0); }, 0.6);
+    });
+
+    /* 3) 합격률 막대가 왼쪽에서 자라남 */
+    document.querySelectorAll(".funnel").forEach(function (f) {
+      f.querySelectorAll(".fi").forEach(function (fi, i) { fi.style.setProperty("--i", i); });
+      watch(f,
+        function () { f.classList.remove("pre"); },
+        function () { f.classList.add("pre"); }, 0.7);
+    });
+
+    /* 4) 도넛이 돌면서 나타나고 범례가 차례로 붙는다 */
+    document.querySelectorAll(".donut").forEach(function (d) {
+      d.querySelectorAll("li").forEach(function (li, i) { li.style.setProperty("--i", i); });
+      watch(d,
+        function () { d.classList.remove("pre"); },
+        function () { d.classList.add("pre"); }, 0.7);
+    });
+
+    /* 5) 전형 단계 칩이 왼쪽부터 하나씩 */
+    document.querySelectorAll(".track").forEach(function (t) {
+      t.querySelectorAll("button").forEach(function (b, i) { b.style.setProperty("--i", i); });
+      watch(t,
+        function () { t.classList.remove("pre"); },
+        function () { t.classList.add("pre"); }, 0.7);
+    });
+
+    /* 6) 안전장치 — 목차 링크로 멀리 건너뛰어 관찰이 건너뛰어졌더라도
+          화면에 들어온 것은 반드시 보이게 한다 */
+    var sweeping = false;
+    function sweep() {
+      sweeping = false;
+      var limit = window.innerHeight * 0.92;
+      watched.forEach(function (w) {
+        var r = w.el.getBoundingClientRect();
+        if (r.top < limit && r.bottom > 0) { w.show(); }
+      });
+    }
+    window.addEventListener("scroll", function () {
+      if (!sweeping) { sweeping = true; requestAnimationFrame(sweep); }
+    }, { passive: true });
+    window.addEventListener("resize", sweep, { passive: true });
+  }
 
   /* 자격증 검색 — CertificateCatalog.Search와 같은 규칙(이름 또는 발급기관) */
   var CERTS = [
